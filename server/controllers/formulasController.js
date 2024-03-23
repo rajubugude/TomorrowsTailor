@@ -36,6 +36,40 @@ const TrouserCalculation = asyncHandler(async (req, res) => {
       "14",
       "15",
     ]; // Add more keys as needed
+    const backpointsToSend = [
+      "0",
+      "21",
+      "19",
+      "24",
+      "29",
+      "28",
+      "26",
+      "27",
+      "25",
+      "22",
+    ]; // Add more keys as needed
+    const gridpointsToSend = [
+      "0",
+      "7",
+      "18",
+      "22",
+      "17",
+      "6",
+      "2",
+      "25",
+      "1",
+      "16",
+      "5",
+      "23",
+      "24",
+      "29",
+      "15",
+      "4",
+      "27",
+      "3",
+      "26",
+      "28",
+    ]; // Add more keys as needed
 
     // Filter the calculated points to include only the points to send
     const filteredPoints = {};
@@ -44,9 +78,27 @@ const TrouserCalculation = asyncHandler(async (req, res) => {
         filteredPoints[key] = calculatedPoints[key];
       }
     });
+    const filteredbackviewPoints = {};
+    backpointsToSend.forEach((key) => {
+      if (calculatedPoints[key]) {
+        filteredbackviewPoints[key] = calculatedPoints[key];
+      }
+    });
+    const filteredgridviewPoints = {};
+    gridpointsToSend.forEach((key) => {
+      if (calculatedPoints[key]) {
+        filteredgridviewPoints[key] = calculatedPoints[key];
+      }
+    });
 
     console.log(filteredPoints);
-    res.json({ success: true, calculatedPoints, filteredPoints });
+    res.json({
+      success: true,
+      calculatedPoints,
+      filteredPoints,
+      filteredbackviewPoints,
+      filteredgridviewPoints,
+    });
     console.log(calculatedPoints);
   } catch (error) {
     console.error("Error calculating points:", error);
