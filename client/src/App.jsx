@@ -9,6 +9,7 @@ import Profile from "./components/Profile";
 import Customise from "./components/customise";
 import Pantfill from "./components/Pantfill";
 import Vectorimagecomponent from "./components/Vectorimagecomponent";
+import StyleOptions from "./components/StyleoptionsTrouser";
 
 function App() {
   return (
@@ -51,6 +52,15 @@ function App() {
               element={
                 <Protected>
                   <Pantfill />
+                </Protected>
+              }
+            />
+            <Route
+              exact
+              path="/style-options"
+              element={
+                <Protected>
+                  <StyleOptions />
                 </Protected>
               }
             />

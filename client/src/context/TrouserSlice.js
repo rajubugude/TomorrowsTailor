@@ -6,6 +6,8 @@ export const trouserSlice = createSlice({
     calculatedPoints: {},
     frontviewpoints: {}, // Renamed from filteredpoints to frontviewpoints
     objlenForVector: 0,
+    backviewpoints: {},
+    gridviewpoints: {},
   },
   reducers: {
     setCalculatedPoints: (state, action) => {
@@ -18,11 +20,22 @@ export const trouserSlice = createSlice({
     setObjlenForVector: (state, action) => {
       state.objlenForVector = action.payload;
     },
+    setbackviewpoints: (state, action) => {
+      state.backviewpoints = action.payload;
+    },
+    setgridviewpoints: (state, action) => {
+      state.gridviewpoints = action.payload;
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setCalculatedPoints, setFrontViewPoints, setObjlenForVector } =
-  trouserSlice.actions;
+export const {
+  setCalculatedPoints,
+  setFrontViewPoints,
+  setObjlenForVector,
+  setbackviewpoints,
+  setgridviewpoints,
+} = trouserSlice.actions;
 
 export default trouserSlice.reducer;

@@ -2,14 +2,17 @@ import { useState } from "react";
 import axios from "axios";
 import "../styles/style.css";
 import { URL } from "../url";
-import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import {
   setCalculatedPoints,
   setObjlenForVector,
   setFrontViewPoints,
+  setbackviewpoints,
+  setgridviewpoints,
 } from "../context/TrouserSlice";
+import Checkoutpage from "./Checkoutpage";
 const Pantfill = () => {
+  const [showcheckout, setShowcheckout] = useState(false);
   const dispatch = useDispatch();
   const [values, setValues] = useState({
     A: 0,
@@ -19,7 +22,6 @@ const Pantfill = () => {
     E: 0,
     F: 0,
   });
-  const navigate = useNavigate();
   const handleChange = (event) => {
     const { name, value } = event.target;
     setValues({
@@ -50,8 +52,13 @@ const Pantfill = () => {
       console.log(data.filteredPoints);
       dispatch(setCalculatedPoints(data.calculatedPoints));
       dispatch(setFrontViewPoints(data.filteredPoints));
+      dispatch(setbackviewpoints(data.filteredbackviewPoints));
+      dispatch(setgridviewpoints(data.filteredgridviewPoints));
+
       dispatch(setObjlenForVector(Object.keys(data.calculatedPoints).length));
-      navigate("/vector-image");
+      setShowcheckout(!showcheckout);
+      console.log(showcheckout);
+      // navigate("/vector-image");
     } catch (error) {
       console.error("Error fetching calculated points:", error);
     }
@@ -160,6 +167,12 @@ const Pantfill = () => {
           </button>
         </div>
       </form>
+      {showcheckout && (
+        <Checkoutpage
+          setShowcheckout={setShowcheckout}
+          showcheckout={showcheckout}
+        />
+      )}
     </>
   );
 };
