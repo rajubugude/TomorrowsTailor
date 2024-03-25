@@ -150,3 +150,6 @@
   flex-direction: row;
   gap: 30px;
 }
+.svg-container {
+  margin-right: 20px;
+}

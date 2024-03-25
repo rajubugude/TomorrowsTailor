@@ -10,6 +10,9 @@ import Customise from "./components/customise";
 import Pantfill from "./components/Pantfill";
 import Vectorimagecomponent from "./components/Vectorimagecomponent";
 import StyleOptions from "./components/StyleoptionsTrouser";
+import AdminProtected from "./auth/AdminProtected";
+import AdminHome from "./admin/adminpages/AdminHome";
+
 
 function App() {
   return (
@@ -62,6 +65,16 @@ function App() {
                 <Protected>
                   <StyleOptions />
                 </Protected>
+              }
+            />
+            
+            <Route
+              exact
+              path="/admin-home"
+              element={
+                <AdminProtected>
+                <AdminHome/>
+                </AdminProtected>
               }
             />
             <Route
