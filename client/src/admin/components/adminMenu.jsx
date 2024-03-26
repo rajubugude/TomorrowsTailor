@@ -7,10 +7,13 @@ import "../../styles/style.css";
 
 const Menu = () => {
   const { user } = useContext(UserContext);
+  const { info } = useContext(UserContext);
+
   const userDataString = sessionStorage.getItem("userData");
   const userData = JSON.parse(userDataString);
   const { data } = userData;
   console.log(data.name);
+  console.log(info)
 
   const navigate = useNavigate();
 
@@ -38,17 +41,17 @@ const Menu = () => {
           <Link to="/register">Register</Link>
         </h3>
       )}
-      {user && user.role==="admin" && (
+      {user && info.role==="admin" && (
         <h3 className=" ">
           <Link to={"/admin-profile/" + data._id}>AdminProfile</Link>
         </h3>
       )}
-      {user && user.role==="admin" && (
+      {user && info.role==="admin" && (
         <h3 className="">
           <Link to={"/dashboard"}>Dashboard</Link>
         </h3>
       )}
-        {user && user.role==="admin" && (
+        {user && info.role==="admin" && (
         <h3 className="">
           <Link to={"/trouser-formulae"}>Edit-Formulae</Link>
         </h3>

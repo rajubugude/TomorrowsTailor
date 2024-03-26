@@ -1,5 +1,5 @@
 import "../../styles/style.css";
-import AdminNavbar from "../components/adminNavbar"
+import AdminNavbar from "../components/adminNavbar";
 
 const AdminHome = () => {
   return (

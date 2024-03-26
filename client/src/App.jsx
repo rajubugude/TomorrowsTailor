@@ -73,7 +73,7 @@ function App() {
               path="/admin-home"
               element={
                 <AdminProtected>
-                <AdminHome/>
+                  <AdminHome/>
                 </AdminProtected>
               }
             />

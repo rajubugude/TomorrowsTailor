@@ -4,13 +4,13 @@ import axios from "axios";
 import { URL } from "../url";
 import "../styles/style.css";
 import NavbarLogin from "./NavbarforLogin";
-
+import { useSelector } from "react-redux";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
   const navigate = useNavigate();
-
+  const data = useSelector((state) => state.user.userInfo);
   const handleLogin = async () => {
     try {
       const res = await axios.post(
@@ -20,7 +20,12 @@ const Login = () => {
       );
       console.log(res.data);
       sessionStorage.setItem("userData", JSON.stringify(res));
-      navigate("/home");
+      console.log(data.role)
+      if (data?.role==="admin"){
+        navigate("/admin-home");
+      }else {
+        navigate("/home")
+      }
     } catch (err) {
       setError(true);
       console.log(err);

@@ -25,6 +25,7 @@ const loginController = asyncHandler(async (req, res) => {
       name: user.name,
       email: user.email,
       token: token,
+      role:user.role,
     };
     res.cookie("token", token).status(200).json(response);
     console.log(response);
@@ -69,6 +70,7 @@ const registerController = asyncHandler(async (req, res) => {
         name: user.name,
         email: user.email,
         token: generateToken(user._id),
+        role:user.role,
       });
     }
   } else {
@@ -94,8 +96,19 @@ const fetchController = asyncHandler(async (req, res) => {
     if (err) {
       return res.status(404).json(err);
     }
-    res.status(200).json(data);
-    console.log(data);
+    const userId= data.id;
+      try {
+      // Fetch the user details from the database using the user ID
+      const user = await userModel.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Send the user details as response
+      res.status(200).json(user);
+    } catch (error) {
+      res.status(500).json({ message: "Internal Server Error" });
+    }
   });
 });
 
