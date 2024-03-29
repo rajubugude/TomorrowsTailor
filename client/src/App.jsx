@@ -12,6 +12,8 @@ import Vectorimagecomponent from "./components/Vectorimagecomponent";
 import StyleOptions from "./components/StyleoptionsTrouser";
 import AdminProtected from "./auth/AdminProtected";
 import AdminHome from "./admin/adminpages/AdminHome";
+import AdminDashboard from "./admin/components/adminDashboard";
+import AdminFormulaepage from "./admin/components/adminFormulaepage";
 
 
 function App() {
@@ -74,6 +76,24 @@ function App() {
               element={
                 <AdminProtected>
                   <AdminHome/>
+                </AdminProtected>
+              }
+            />
+            <Route
+              exact
+              path="/dashboard"
+              element={
+                <AdminProtected>
+                  <AdminDashboard/>
+                </AdminProtected>
+              }
+            />
+            <Route
+              exact
+              path="/trouser-formulae"
+              element={
+                <AdminProtected>
+                  <AdminFormulaepage/>
                 </AdminProtected>
               }
             />

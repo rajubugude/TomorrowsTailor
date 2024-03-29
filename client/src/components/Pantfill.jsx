@@ -35,7 +35,7 @@ const Pantfill = () => {
 
     try {
       const response = await axios.post(
-        URL + "/calculate/trouser",
+        URL + "/trouser/calculate",
         { values },
         {
           headers: {

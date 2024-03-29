@@ -26,7 +26,7 @@ app.use(express.json());
 app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use(cookieParser());
 app.use("/user", userRoute);
-app.use("/calculate", formulasRoute);
+app.use("/trouser", formulasRoute);
 
 // Query the database to check if any formulas exist
 // Formula.find()

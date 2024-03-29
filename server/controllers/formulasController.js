@@ -3,6 +3,9 @@ const mongoose = require("mongoose");
 const asyncHandler = require("express-async-handler");
 const Formula = require("../model/Formula");
 const math = require("mathjs");
+const userModel = require("../model/User")
+const jwt = require("jsonwebtoken");
+
 
 const TrouserCalculation = asyncHandler(async (req, res) => {
   const { values } = req.body;
@@ -106,4 +109,28 @@ const TrouserCalculation = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { TrouserCalculation };
+
+
+
+const FetchFormulaeController = asyncHandler(async (req, res) => {
+  const token = req.cookies.token;
+  jwt.verify(token, process.env.JWT_SECRET, {}, async (err, data) => {
+    if (err) {
+      return res.status(404).json(err);
+    }
+    const userId= data.id;
+      try {
+      const user = await userModel.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      if (user.role ==="admin"){
+        const formulas = await Formula.find();
+        res.status(200).json(formulas);
+      }
+    } catch (error) {
+      res.status(500).json({ message: "Not authorized to fetch formulae" });
+    }
+  });
+});
+module.exports = { TrouserCalculation , FetchFormulaeController};

@@ -153,3 +153,43 @@
 .svg-container {
   margin-right: 20px;
 }
+
+.styled-table {
+  width: 1000px;
+  border-collapse: collapse;
+  border: 1px solid #ddd;
+}
+
+.styled-table th,
+.styled-table td {
+  padding: 10px;
+  text-align: left;
+  gap:14px
+}
+
+
+.styled-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+  border-bottom: 2px solid #ddd;
+}
+
+.styled-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.styled-table tr:hover {
+  background-color: #f2f2f2;
+}
+
+.icon-button {
+  background-color: #f8c869;
+  cursor: pointer;
+  color: black;
+  margin: 2;
+}
+
+.icon-button:hover {
+  color: #007bff;
+  /* Change color on hover */
+}

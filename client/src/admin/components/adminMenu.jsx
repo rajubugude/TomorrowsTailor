@@ -43,6 +43,11 @@ const Menu = () => {
       )}
       {user && info.role==="admin" && (
         <h3 className=" ">
+          <Link to={"/admin-home"}>Home</Link>
+        </h3>
+      )}
+      {user && info.role==="admin" && (
+        <h3 className=" ">
           <Link to={"/admin-profile/" + data._id}>AdminProfile</Link>
         </h3>
       )}
@@ -51,11 +56,11 @@ const Menu = () => {
           <Link to={"/dashboard"}>Dashboard</Link>
         </h3>
       )}
-        {user && info.role==="admin" && (
+        {/* {user && info.role==="admin" && (
         <h3 className="">
           <Link to={"/trouser-formulae"}>Edit-Formulae</Link>
         </h3>
-      )}
+      )} */}
 
       {user && (
         <h3 onClick={handleLogout} className="logout">
