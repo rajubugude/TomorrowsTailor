@@ -66,21 +66,13 @@ const Vectorimagecomponent = () => {
       const { x: x2, y: y2 } = point2;
 
 
-
+      const d = `M${x1} ${y1} C${x1} ${(y1 + y2) / 2}, ${x2} ${(y1 + y2) / 2}, ${x2} ${y2}`;
       // Get color for this line from the colors array
       const color = colors[i % colors.length];
 
       // Push each line JSX element into the lines array with the assigned color
       lines.push(
-        <line
-          key={`${u}-${v}`}
-          x1={x1}
-          y1={y1}
-          x2={x2}
-          y2={y2}
-          stroke={color}
-          strokeWidth="2"
-        />
+        <path d={d} stroke={color} strokeWidth="2" fill="transparent"/>
       );
     }
     return lines;
@@ -97,21 +89,13 @@ const Vectorimagecomponent = () => {
       const { x: x2, y: y2 } = point2;
 
 
-
+      const d = `M${x1} ${y1} C${x1} ${(y1 + y2) / 2}, ${x2} ${(y1 + y2) / 2}, ${x2} ${y2}`;
       // Get color for this line from the colors array
       const color = colors[i % colors.length];
 
       // Push each line JSX element into the lines array with the assigned color
       lines.push(
-        <line
-          key={`${u}-${v}`}
-          x1={x1}
-          y1={y1}
-          x2={x2}
-          y2={y2}
-          stroke={color}
-          strokeWidth="2"
-        />
+        <path d={d} stroke={color} strokeWidth="2" fill="transparent"/>
       );
     }
     return lines;
@@ -127,21 +111,14 @@ const Vectorimagecomponent = () => {
       const { x: x2, y: y2 } = point2;
 
 
-
+      const d = `M${x1} ${y1} C${x1} ${(y1 + y2) / 2}, ${x2} ${(y1 + y2) / 2}, ${x2} ${y2}`;
       // Get color for this line from the colors array
       const color = colors[i % colors.length];
 
       // Push each line JSX element into the lines array with the assigned color
       lines.push(
-        <line
-          key={`${u}-${v}`}
-          x1={x1}
-          y1={y1}
-          x2={x2}
-          y2={y2}
-          stroke={color}
-          strokeWidth="2"
-        />
+      <path d={d} stroke={color} strokeWidth="2" fill="transparent"/>
+
       );
     }
     return lines;
@@ -150,7 +127,7 @@ const Vectorimagecomponent = () => {
 return (
   <>
     <h1>Hi vector!</h1>
-    <div className="flex flex-row">
+    <div className="gridbox ">
       <div className="svg-container">
         <svg
           width="900"

@@ -150,8 +150,22 @@
   flex-direction: row;
   gap: 30px;
 }
+.gridbox {
+  display: flex;
+  justify-content: center;
+  /* Center the content horizontally */
+  gap: 20px;
+  /* Adjust the gap between the SVG containers */
+}
+
 .svg-container {
-  margin-right: 20px;
+  width: 400px;
+  /* Adjust the width of each SVG container */
+}
+
+/* Optional: Adjust the height of the SVG containers if needed */
+.svg-container svg {
+  height: 700px;
 }
 
 .styled-table {

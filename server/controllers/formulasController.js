@@ -133,4 +133,71 @@ const FetchFormulaeController = asyncHandler(async (req, res) => {
     }
   });
 });
-module.exports = { TrouserCalculation , FetchFormulaeController};
+
+// Update Formula Controller
+const UpdateFormulaController = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { key, expression } = req.body;
+
+  try {
+    // Check if the user is an admin
+    const token = req.cookies.token;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded.id;
+    const user = await userModel.findById(userId);
+    if (!user || user.role !== "admin") {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    // Find the formula by id
+    let formula = await Formula.findById(id);
+    if (!formula) {
+      return res.status(404).json({ message: "Formula not found" });
+    }
+
+    // Update the formula fields
+    formula.key = key;
+    formula.expression = expression;
+
+    // Save the updated formula
+    await formula.save();
+
+    res.status(200).json({ message: "Formula updated successfully", formula });
+  } catch (error) {
+    console.error("Error updating formula:", error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+});
+
+
+
+// Delete Formula Controller
+const DeleteFormulaController = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Check if the user is an admin
+    const token = req.cookies.token;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded.id;
+    const user = await userModel.findById(userId);
+    if (!user || user.role !== "admin") {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    // Find the formula by id
+    let formula = await Formula.findById(id);
+    if (!formula) {
+      return res.status(404).json({ message: "Formula not found" });
+    }
+
+    // Delete the formula
+    await formula.remove();
+
+    res.status(200).json({ message: "Formula deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting formula:", error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+});
+module.exports = { TrouserCalculation , FetchFormulaeController ,DeleteFormulaController,UpdateFormulaController};
