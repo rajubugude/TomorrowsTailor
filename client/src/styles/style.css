@@ -159,13 +159,17 @@
 }
 
 .svg-container {
-  width: 400px;
+  width: 300px;
   /* Adjust the width of each SVG container */
+  margin-right: 200px;
 }
 
 /* Optional: Adjust the height of the SVG containers if needed */
 .svg-container svg {
   height: 700px;
+
+  
+ 
 }
 
 .styled-table {
