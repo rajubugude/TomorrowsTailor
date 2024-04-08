@@ -211,3 +211,30 @@
   color: #007bff;
   /* Change color on hover */
 }
+
+
+.grid-d {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.download-button {
+  background-color: #4CAF50;
+  /* Green */
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  transition-duration: 0.4s;
+  cursor: pointer;
+}
+
+.download-button:hover {
+  background-color: #45a049;
+  /* Darker Green */
+}

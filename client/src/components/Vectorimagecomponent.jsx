@@ -1,11 +1,85 @@
 import { useSelector } from "react-redux";
 import "../styles/style.css";
 import Navbar from "../components/Navbar";
-
+import { useRef } from 'react';
+import { jsPDF } from 'jspdf';
 const Vectorimagecomponent = () => {
+  const svgRef = useRef(null);
+
+
+    // Function to handle download
+  const handleDownloadimage = () => {
+    const svg = svgRef.current;
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    // Set canvas size to match SVG
+    canvas.width = svg.width.baseVal.value;
+    canvas.height = svg.height.baseVal.value;
+
+    // Draw SVG onto canvas
+    const svgData = new XMLSerializer().serializeToString(svg);
+    const img = new Image();
+    img.onload = () => {
+      ctx.drawImage(img, 0, 0);
+
+      // Convert canvas to data URL
+      const dataUrl = canvas.toDataURL('image/png');
+
+      // Trigger download
+      const link = document.createElement('a');
+      link.download = 'image.png';
+      link.href = dataUrl;
+      link.click();
+    };
+    img.src = 'data:image/svg+xml;base64,' + btoa(svgData);
+  };
+  // Function to handle download
+const handleDownload = async () => {
+  const svg = svgRef.current;
+
+  try {
+    // Convert SVG to JPEG image with specified quality (0.8)
+    const imageDataUrlJPEG = await convertSvgToImage(svg, 'image/jpeg', 0.8);
+
+    // Create new jsPDF instance
+    const doc = new jsPDF();
+
+    // Add image to PDF
+    doc.addImage(imageDataUrlJPEG, 'JPEG', 0, 0);
+
+    // Save PDF
+    doc.save('image.pdf');
+  } catch (error) {
+    console.error('Error converting SVG to image:', error);
+  }
+};
+
+const convertSvgToImage = async (svg, format = 'image/png', quality = 1) => {
+  return new Promise((resolve, reject) => {
+    try {
+      const svgString = new XMLSerializer().serializeToString(svg);
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        context.drawImage(img, 0, 0);
+        resolve(canvas.toDataURL(format, quality));
+      };
+      img.onerror = reject;
+      img.src = 'data:image/svg+xml;base64,' + btoa(svgString);
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+
   const pairs = [
     [10, 6],
-    [6, 9],
+    [6,9],
     [9, 15],
     [15, 14],
     [14, 3],
@@ -15,7 +89,7 @@ const Vectorimagecomponent = () => {
     [8, 11],
     [11, 10],
   ];
-  const backpairs=[[21,0],[0,22],[22,25],[25,27],[27,26],[26,28],[28,29],[29,24],[24,19],[19,21]]
+  const backpairs=[[21,22],[22,25],[25,27],[27,26],[26,28],[28,29],[24,29],[19,24],[19,21]]
   const gridpairs=[[7,18],[18,17],[18,0],[0,22],[0,2],[2,25],[2,17],[17,6],[6,7],[17,16],[16,1],[1,2],[16,5],[5,23],[23,24],[24,29],[29,15],[15,4],[5,15],[4,1],[4,27],[4,3],[3,26],[3,28]]
   const calculatedPoints = useSelector(
     (state) => state.trouser.calculatedPoints
@@ -28,44 +102,176 @@ const Vectorimagecomponent = () => {
   
   console.log("Calculated Points:", calculatedPoints);
   console.log("Object Length for Vector:", objlenForVector);
+  console.log("front view points:", frontviewpoints)
 
 
 
-const generateFrontPolygon = () => {
-  const lines = [];
-  for (let i = 0; i < pairs.length; i++) {
-    const [u, v] = pairs[i];
-    const point1 = frontviewpoints[u];
-    const point2 = frontviewpoints[v];
-    lines.push([point1, point2]);
-  }
   
-  const pointString = lines.map(([point]) => `${point.x-10},${point.y}`).join(' ');
-  
-  return (
-    <g fill="none" >
-      <polygon shapeRendering="auto" points={pointString} stroke="black" strokeWidth="0.505" fill="none" strokeDasharray="4,1" // Adjust the length of each dash and gap as needed
-    strokeDashoffset="0"  />
-    </g>
-  );
-};
-const generateBackPolygon = () => {
-  const lines = [];
-  for (let i = 0; i < backpairs.length; i++) {
-    const [u, v] = backpairs[i];
-    const point1 = backviewpoints[u];
-    const point2 = backviewpoints[v];
-    lines.push([point1, point2]);
-  }
-  
-  const pointString = lines.map(([point]) => `${point.x-10},${point.y}`).join(' ');
-  
-  return (
-    <g fill="none" >
-      <polygon shapeRendering="auto" points={pointString} stroke="black" strokeWidth="0.505" fill="none" />
-    </g>
-  );
-};
+
+
+
+
+  const generateFrontview = () => {
+    const lines = [];
+    for (let i = 0; i < pairs.length; i++) {
+      const [u, v] = pairs[i];
+      const point1 = frontviewpoints[u];
+      const point2 = frontviewpoints[v];
+
+      if (u===6 && v===9) {
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        const d = `M${x1} ${y1} A9 5, 0, 0 0, ${x2} ${y2}`;
+        lines.push(
+          <path d={d} stroke="Black" strokeWidth="0.505" fill="none" strokeDasharray="4,1"/> 
+        );
+      }else if(u===8 && v===11){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        const d = `M${x1} ${y1} A14 28, 0, 0 1, ${x2} ${y2}`;
+        lines.push(
+          <path d={d} stroke="Black" strokeWidth="0.505" fill="none" strokeDasharray="4,1"/> 
+        );
+      }else if(u===9 && v===15){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        const d = `M${x1} ${y1} A60 45, 0, 0 0, ${x2} ${y2}`;
+        lines.push(
+          <path d={d} stroke="Black" strokeWidth="0.505" fill="none" strokeDasharray="4,1"/> 
+        );
+      }
+      else{
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        lines.push(
+            <line
+            x1={x1}
+            y1={y1}
+            x2={x2}
+            y2={y2}
+            stroke="black"
+            strokeWidth="0.503"
+            fill="none"
+            strokeDasharray="4,1"
+          />
+          );
+      }
+    }
+    return lines;
+  };
+
+
+  const generateFront1view = () => {
+    const lines = [];
+    for (let i = 0; i < pairs.length; i++) {
+      const [u, v] = pairs[i];
+      const point1 = frontviewpoints[u];
+      const point2 = frontviewpoints[v];
+
+      if (u===6 && v===9) {
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        const d = `M${x1} ${y1+110} A9 5, 0, 0 0, ${x2} ${y2+110}`;
+        lines.push(
+          <path d={d} stroke="Black" strokeWidth="0.503" fill="none"/> 
+        );
+      }else if(u===8 && v===11){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        const d = `M${x1} ${y1+110} A14 28, 0, 0 1, ${x2} ${y2+110}`;
+        lines.push(
+          <path d={d} stroke="Black" strokeWidth="0.505" fill="none"/> 
+        );
+      }else if(u===9 && v===15){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        const d = `M${x1} ${y1+110} A60 45, 0, 0 0, ${x2} ${y2+110}`;
+        lines.push(
+          <path d={d} stroke="Black" strokeWidth="0.505" fill="none"/> 
+        );
+      }
+      else{
+
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        lines.push(
+            <line
+            x1={x1}
+            y1={y1+110}
+            x2={x2}
+            y2={y2+110}
+            stroke="black"
+            strokeWidth="0.503"
+          />
+          );
+      }
+
+    }
+    return lines;
+  };
+
+  const generateBackview = () => {
+    const lines = [];
+    for (let i = 0; i < backpairs.length; i++) {
+      const [u, v] = backpairs[i];
+      const point1 = backviewpoints[u];
+      const point2 = backviewpoints[v];
+      if (u===19 && v===24) {
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        const d = `M${x1} ${y1} A11 16, 0, 0 0, ${x2} ${y2}`;
+        lines.push(
+          <path d={d} stroke="Black" strokeWidth="0.505" fill="none"/> 
+        );
+      }else if(u===24 && v===29){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        const d = `M${x1} ${y1} A100 125, 0, 0 0, ${x2} ${y2}`;
+        lines.push(
+          <path d={d} stroke="Black" strokeWidth="0.505" fill="none" /> 
+        );
+      }else if(u===22 && v===25){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        const d = `M${x1} ${y1} A120 80 , 0, 0 0, ${x2} ${y2}`;
+        lines.push(
+          <path d={d} stroke="Black" strokeWidth="0.505" fill="none" /> 
+        );
+      }else if(u===25 && v===27){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        const d = `M${x1} ${y1} A70 140 , 0, 0 1, ${x2} ${y2}`;
+        lines.push(
+          <path d={d} stroke="Black" strokeWidth="0.505" fill="none" /> 
+        );
+      }else if(u===26 && v===28){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        const d = `M${x1} ${y1} A10 1 , 0, 0 0, ${x2} ${y2}`;
+        lines.push(
+          <path d={d} stroke="Black" strokeWidth="0.505" fill="none" /> 
+        );
+      }
+      else{
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        lines.push(
+            <line
+            x1={x1}
+            y1={y1}
+            x2={x2}
+            y2={y2}
+            stroke="black"
+            strokeWidth="0.503"
+            fill="none"
+          />
+          );
+      }
+    }
+    return lines;
+  };
+
+ 
 
 const generateGridview = () => {
     const lines = [];
@@ -73,16 +279,11 @@ const generateGridview = () => {
       const [u, v] = gridpairs[i];
       const point1 = gridviewpoints[u];
       const point2 = gridviewpoints[v];
-
       const { x: x1, y: y1 } = point1;
       const { x: x2, y: y2 } = point2;
 
 
       const d = `M${x1+125} ${y1+110} C${x1+125} ${(y1+110 + y2+110) / 2}, ${x2+125} ${(y1+110 + y2+110) / 2}, ${x2+125} ${y2+110}`;
-      // Get color for this line from the colors array
-      // const color = colors[i % colors.length];
-
-      // Push each line JSX element into the lines array with the assigned color
       lines.push(
       <path d={d} stroke="Black" strokeWidth="0.503" fill="none"/>
 
@@ -90,52 +291,81 @@ const generateGridview = () => {
     }
     return lines;
   };
-const generateFront1Polygon = () => {
-  const lines = [];
-  for (let i = 0; i < pairs.length; i++) {
-    const [u, v] = pairs[i];
-    const point1 = frontviewpoints[u];
-    const point2 = frontviewpoints[v];
-    lines.push([point1, point2]);
-  }
-  
-  const pointString = lines.map(([point]) => `${point.x-10},${point.y+110}`).join(' ');
-  
-  return (
-    <g fill="none" >
-      <polygon shapeRendering="auto" points={pointString} stroke="black" strokeWidth="0.505" fill="none" />
-    </g>
-  );
-};
 
-const generateBack1Polygon = () => {
-  const lines = [];
-  for (let i = 0; i < backpairs.length; i++) {
-    const [u, v] = backpairs[i];
-    const point1 = backviewpoints[u];
-    const point2 = backviewpoints[v];
-    lines.push([point1, point2]);
-  }
-  
-  const pointString = lines.map(([point]) => `${point.x+55},${point.y+110}`).join(' ');
-  
-  return (
-    <g fill="none" >
-      <polygon shapeRendering="auto" points={pointString} stroke="black" strokeWidth="0.505" fill="none" />
-    </g>
-  );
-};
+
+  const generateBack1view = () => {
+    const lines = [];
+    for (let i = 0; i < backpairs.length; i++) {
+      const [u, v] = backpairs[i];
+      const point1 = backviewpoints[u];
+      const point2 = backviewpoints[v];
+      if (u===19 && v===24) {
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        const d = `M${x1+55} ${y1+110} A11 16, 0, 0 0, ${x2+55} ${y2+110}`;
+        lines.push(
+          <path d={d} stroke="Black" strokeWidth="0.505" fill="none"/> 
+        );
+      }else if(u===24 && v===29){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        const d = `M${x1+55} ${y1+110} A100 125, 0, 0 0, ${x2+55} ${y2+110}`;
+        lines.push(
+          <path d={d} stroke="Black" strokeWidth="0.505" fill="none" /> 
+        );
+      }else if(u===22 && v===25){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        const d = `M${x1+55} ${y1+110} A120 80 , 0, 0 0, ${x2+55} ${y2+110}`;
+        lines.push(
+          <path d={d} stroke="Black" strokeWidth="0.505" fill="none" /> 
+        );
+      }else if(u===25 && v===27){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        const d = `M${x1+55} ${y1+110} A70 140 , 0, 0 1, ${x2+55} ${y2+110}`;
+        lines.push(
+          <path d={d} stroke="Black" strokeWidth="0.505" fill="none" /> 
+        );
+      }else if(u===26 && v===28){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        const d = `M${x1+55} ${y1+110} A10 1 , 0, 0 0, ${x2+55} ${y2+110}`;
+        lines.push(
+          <path d={d} stroke="Black" strokeWidth="0.505" fill="none" /> 
+        );
+      }
+      else{
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        lines.push(
+            <line
+            x1={x1+55}
+            y1={y1+110}
+            x2={x2+55}
+            y2={y2+110}
+            stroke="black"
+            strokeWidth="0.503"
+            fill="none"
+          />
+          );
+      }
+    }
+    return lines;
+  };
+
+
 return (
   <>
   <Navbar/>
     <div className="gridbox ">
       <div className="svg-container">
-        <svg width="800" height="1000" viewBox="-0 -115 130 240.0034" baseProfile="full" xmlns="http://www.w3.org/2000/svg" transform="scale(1, -1)" style={{backgroundColor:"whitesmoke" ,borderRadius:"5rem", marginTop:"100px"}}>
-         {generateFrontPolygon()}
-         {generateBackPolygon()}
+        <svg ref={svgRef} width="800" height="1000" viewBox="-0 -115 130 240.0034" baseProfile="full" xmlns="http://www.w3.org/2000/svg" transform="scale(1, -1)" style={{backgroundColor:"whitesmoke" ,borderRadius:"5rem", marginTop:"100px"}}>
          {generateGridview()}
-         {generateFront1Polygon()}
-         {generateBack1Polygon()}
+         {generateBackview()}
+         {generateFront1view()}
+         {generateBack1view()}
+         {generateFrontview()}
           <g fill="none" stroke="Black">
           {/* vertical lines */}
             <polyline shapeRendering="crispEdges" points="-1.3632, -110.0803 -1.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
@@ -176,6 +406,8 @@ return (
             <polyline shapeRendering="crispEdges" points="-36.3632, -110.0803 -36.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
             <polyline shapeRendering="crispEdges" points="-37.3632, -110.0803 -37.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
             <polyline shapeRendering="crispEdges" points="-38.3632, -110.0803 -38.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
+            <polyline shapeRendering="crispEdges" points="-39.3632, -110.0803 -39.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
+
 
             <polyline shapeRendering="crispEdges" points="-0.3632, -110.0803 -0.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
             <polyline shapeRendering="crispEdges" points="0.3632, -110.0803 0.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
@@ -660,6 +892,12 @@ return (
         </svg>
       </div>
     </div>
+    {/* Button to trigger download */}
+    <div className="grid-d pt-20">
+      <button className="download-button" onClick={handleDownload}>Download PDF</button>
+      <button className="download-button" onClick={handleDownloadimage}>Download Image</button>
+    </div>
+
   </>
 );
 

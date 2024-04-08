@@ -38,6 +38,9 @@ const TrouserCalculation = asyncHandler(async (req, res) => {
       "13",
       "14",
       "15",
+      "30",
+
+
     ]; // Add more keys as needed
     const backpointsToSend = [
       "0",

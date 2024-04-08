@@ -116,15 +116,16 @@ const sampleFormulas = [
       y: -0.5 * D - 0.5 * E - 5,
     }),
   },
+  { key: "30", expression: (A, B, C, D, E, F) => ({ x: -(B / 12) - 2 - 2.121320344, y: -D + 2.121320344}) },
+
+
 ];
 
-// In formula 27, you have ((-0.5D-0.5E-5)). It seems like you have an extra parenthesis. Remove one of the closing parentheses so it becomes (-0.5D-0.5E-5).
 
 // Make these corrections to your expressions, and the syntax error should be resolved. After modifying the expressions, try recalculating the points. If you encounter any further issues, please let me know!
-// Insert sample formulas into the database
+// // Insert sample formulas into the database
 // Formula.insertMany(sampleFormulas)
 //   .then(() => console.log("Sample formulas inserted successfully"))
 //   .catch((err) => console.error("Error inserting sample formulas:", err));
 
-// Export the Formula model
 module.exports = Formula;
