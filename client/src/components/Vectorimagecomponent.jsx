@@ -34,6 +34,8 @@ const Vectorimagecomponent = () => {
     };
     img.src = 'data:image/svg+xml;base64,' + btoa(svgData);
   };
+
+
   // Function to handle download
 const handleDownload = async () => {
   const svg = svgRef.current;
@@ -88,8 +90,11 @@ const convertSvgToImage = async (svg, format = 'image/png', quality = 1) => {
     [13, 8],
     [8, 11],
     [11, 10],
+    [30,30],
+    [32,32],
+    [33,33],
   ];
-  const backpairs=[[21,22],[22,25],[25,27],[27,26],[26,28],[28,29],[24,29],[19,24],[19,21]]
+  const backpairs=[[21,22],[22,25],[25,27],[27,26],[26,28],[28,29],[24,29],[19,24],[19,21],[31,31],[34,34],[35,35],[36,36],[37,37]]
   const gridpairs=[[7,18],[18,17],[18,0],[0,22],[0,2],[2,25],[2,17],[17,6],[6,7],[17,16],[16,1],[1,2],[16,5],[5,23],[23,24],[24,29],[29,15],[15,4],[5,15],[4,1],[4,27],[4,3],[3,26],[3,28]]
   const calculatedPoints = useSelector(
     (state) => state.trouser.calculatedPoints
@@ -139,6 +144,42 @@ const convertSvgToImage = async (svg, format = 'image/png', quality = 1) => {
         lines.push(
           <path d={d} stroke="Black" strokeWidth="0.505" fill="none" strokeDasharray="4,1"/> 
         );
+      }else if(u===30 && v===30){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        console.log(x2, y2);
+        // const size = 1.5;
+
+        const pointStyle = {
+          fill: 'darkred', 
+        };
+        lines.push(
+              <circle cx={x1} cy={y1} r={0.6} style={pointStyle}/>
+        )
+      }else if(u===32 && v===32){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        console.log(x2, y2);
+        // const size = 1.5;
+
+        const pointStyle = {
+          fill: 'darkred', 
+        };
+        lines.push(
+              <circle cx={x1} cy={y1} r={0.6} style={pointStyle}/>
+        )
+      }else if(u===33 && v===33){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        console.log(x2, y2);
+        // const size = 1.5;
+
+        const pointStyle = {
+          fill: 'darkred', 
+        };
+        lines.push(
+              <circle cx={x1} cy={y1} r={0.6} style={pointStyle}/>
+        )
       }
       else{
         const { x: x1, y: y1 } = point1;
@@ -189,6 +230,42 @@ const convertSvgToImage = async (svg, format = 'image/png', quality = 1) => {
         lines.push(
           <path d={d} stroke="Black" strokeWidth="0.505" fill="none"/> 
         );
+      }else if(u===30 && v===30){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        console.log(x2, y2);
+        // const size = 1.5;
+
+        const pointStyle = {
+          fill: 'darkred', 
+        };
+        lines.push(
+              <circle cx={x1} cy={y1+110} r={0.6} style={pointStyle}/>
+        )
+      }else if(u===32 && v===32){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        console.log(x2, y2);
+        // const size = 1.5;
+
+        const pointStyle = {
+          fill: 'darkred', 
+        };
+        lines.push(
+              <circle cx={x1} cy={y1+110} r={0.6} style={pointStyle}/>
+        )
+      }else if(u===33 && v===33){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        console.log(x2, y2);
+        // const size = 1.5;
+
+        const pointStyle = {
+          fill: 'darkred', 
+        };
+        lines.push(
+              <circle cx={x1} cy={y1+110} r={0.6} style={pointStyle}/>
+        )
       }
       else{
 
@@ -251,6 +328,66 @@ const convertSvgToImage = async (svg, format = 'image/png', quality = 1) => {
         lines.push(
           <path d={d} stroke="Black" strokeWidth="0.505" fill="none" /> 
         );
+      }else if(u===31 && v===31){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        console.log(x2, y2);
+        // const size = 1.5;
+
+        const pointStyle = {
+          fill: 'blue', 
+        };
+        lines.push(
+              <circle cx={x1} cy={y1} r={0.6} style={pointStyle}/>
+        )
+      }else if(u===34 && v===34){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        console.log(x2, y2);
+        // const size = 1.5;
+
+        const pointStyle = {
+          fill: 'blue', 
+        };
+        lines.push(
+              <circle cx={x1} cy={y1} r={0.6} style={pointStyle}/>
+        )
+      }else if(u===35 && v===35){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        console.log(x2, y2);
+        // const size = 1.5;
+
+        const pointStyle = {
+          fill: 'blue', 
+        };
+        lines.push(
+              <circle cx={x1} cy={y1} r={0.6} style={pointStyle}/>
+        )
+      }else if(u===36 && v===36){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        console.log(x2, y2);
+        // const size = 1.5;
+
+        const pointStyle = {
+          fill: 'blue', 
+        };
+        lines.push(
+              <circle cx={x1} cy={y1} r={0.6} style={pointStyle}/>
+        )
+      }else if(u===37 && v===37){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        console.log(x2, y2);
+        // const size = 1.5;
+
+        const pointStyle = {
+          fill: 'blue', 
+        };
+        lines.push(
+              <circle cx={x1} cy={y1} r={0.6} style={pointStyle}/>
+        )
       }
       else{
         const { x: x1, y: y1 } = point1;
@@ -270,28 +407,6 @@ const convertSvgToImage = async (svg, format = 'image/png', quality = 1) => {
     }
     return lines;
   };
-
- 
-
-const generateGridview = () => {
-    const lines = [];
-    for (let i = 0; i < gridpairs.length; i++) {
-      const [u, v] = gridpairs[i];
-      const point1 = gridviewpoints[u];
-      const point2 = gridviewpoints[v];
-      const { x: x1, y: y1 } = point1;
-      const { x: x2, y: y2 } = point2;
-
-
-      const d = `M${x1+125} ${y1+110} C${x1+125} ${(y1+110 + y2+110) / 2}, ${x2+125} ${(y1+110 + y2+110) / 2}, ${x2+125} ${y2+110}`;
-      lines.push(
-      <path d={d} stroke="Black" strokeWidth="0.503" fill="none"/>
-
-      );
-    }
-    return lines;
-  };
-
 
   const generateBack1view = () => {
     const lines = [];
@@ -334,6 +449,66 @@ const generateGridview = () => {
         lines.push(
           <path d={d} stroke="Black" strokeWidth="0.505" fill="none" /> 
         );
+      }else if(u===31 && v===31){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        console.log(x2, y2);
+        // const size = 1.5;
+
+        const pointStyle = {
+          fill: 'blue', 
+        };
+        lines.push(
+              <circle cx={x1+55} cy={y1+110} r={0.6} style={pointStyle}/>
+        )
+      }else if(u===34 && v===34){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        console.log(x2, y2);
+        // const size = 1.5;
+
+        const pointStyle = {
+          fill: 'blue', 
+        };
+        lines.push(
+              <circle cx={x1+55} cy={y1+110} r={0.6} style={pointStyle}/>
+        )
+      }else if(u===35 && v===35){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        console.log(x2, y2);
+        // const size = 1.5;
+
+        const pointStyle = {
+          fill: 'blue', 
+        };
+        lines.push(
+              <circle cx={x1+55} cy={y1+110} r={0.6} style={pointStyle}/>
+        )
+      }else if(u===36 && v===36){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        console.log(x2, y2);
+        // const size = 1.5;
+
+        const pointStyle = {
+          fill: 'blue', 
+        };
+        lines.push(
+              <circle cx={x1+55} cy={y1+110} r={0.6} style={pointStyle}/>
+        )
+      }else if(u===37 && v===37){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        console.log(x2, y2);
+        // const size = 1.5;
+
+        const pointStyle = {
+          fill: 'blue', 
+        };
+        lines.push(
+          <circle cx={x1+55} cy={y1+110} r={0.6} style={pointStyle}/>
+        )
       }
       else{
         const { x: x1, y: y1 } = point1;
@@ -353,6 +528,28 @@ const generateGridview = () => {
     }
     return lines;
   };
+
+  const generateGridview = () => {
+    const lines = [];
+    for (let i = 0; i < gridpairs.length; i++) {
+      const [u, v] = gridpairs[i];
+      const point1 = gridviewpoints[u];
+      const point2 = gridviewpoints[v];
+      const { x: x1, y: y1 } = point1;
+      const { x: x2, y: y2 } = point2;
+
+
+      const d = `M${x1+125} ${y1+110} C${x1+125} ${(y1+110 + y2+110) / 2}, ${x2+125} ${(y1+110 + y2+110) / 2}, ${x2+125} ${y2+110}`;
+      lines.push(
+      <path d={d} stroke="Black" strokeWidth="0.503" fill="none"/>
+
+      );
+    }
+    return lines;
+  };
+
+
+
 
 
 return (

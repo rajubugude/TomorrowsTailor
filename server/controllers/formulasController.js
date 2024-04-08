@@ -39,6 +39,8 @@ const TrouserCalculation = asyncHandler(async (req, res) => {
       "14",
       "15",
       "30",
+      "32",
+      "33",
 
 
     ]; // Add more keys as needed
@@ -53,6 +55,11 @@ const TrouserCalculation = asyncHandler(async (req, res) => {
       "27",
       "25",
       "22",
+      "31",
+      "34",
+      "35",
+      "36",
+      "37",
     ]; // Add more keys as needed
     const gridpointsToSend = [
       "0",
