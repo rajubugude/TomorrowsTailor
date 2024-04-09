@@ -9,6 +9,8 @@ const formulasRoute = require("./routes/formulasRoute");
 const userRoute = require("./routes/userRoute");
 const Pdf = require("./model/pdfSchema")
 // const User = require("./models/User");
+const multer = require('multer');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -42,6 +44,26 @@ app.use("/trouser", formulasRoute);
 //     console.error("Error checking formulas in the database:", error);
 //   });
 //
+
+// Set up storage for multer
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/');
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ storage: storage });
+
+// Endpoint to receive PDF file
+app.post('/upload', upload.single('pdf'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).send('No files were uploaded.');
+  }
+  res.send('File uploaded successfully.');
+});
 
 
 

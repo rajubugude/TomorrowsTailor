@@ -3,6 +3,8 @@ import "../styles/style.css";
 import Navbar from "../components/Navbar";
 import {  useRef, useState} from 'react';
 import { jsPDF } from 'jspdf';
+import axios from "axios"
+import { URL } from "../url";
 
 
 const Vectorimagecomponent = () => {
@@ -13,6 +15,24 @@ const Vectorimagecomponent = () => {
 
 
 
+const uploadPDFToBackend = async (pdfFile) => {
+  try {
+    // Create FormData object
+    const formData = new FormData();
+    formData.append('pdf', pdfFile, 'tailor_info.pdf');
+
+    // Send PDF file to backend using Axios
+    const response = await axios.post(URL+'/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+
+    console.log('PDF uploaded successfully:', response.data);
+  } catch (error) {
+    console.error('Error uploading PDF:', error);
+  }
+};
 
 
 
@@ -177,6 +197,7 @@ const downloadPDF = async () => {
         doc.save("tailor_info.pdf");
         // Upload the PDF to the backend
         console.log(doc)
+        uploadPDFToBackend(doc.output('blob'));
       };
     }
   } catch (error) {
