@@ -414,7 +414,7 @@
         </svg> */}
 
 
-        //   const generateBackview = () => {
+  //   const generateBackview = () => {
   //   const lines = [];
   //   for (let i = 0; i < backpairs.length; i++) {
   //     const [u, v] = backpairs[i];
@@ -436,3 +436,109 @@
   //   }
   //   return lines;
   // };
+
+
+
+//   const [imageDataUrlJPEG1, setImageDataUrlJPEG1] = useState(null);
+// const [imageDataUrlJPEG2, setImageDataUrlJPEG2] = useState(null);
+
+// const handleDownload = async () => {
+//   try {
+//     const doc = new jsPDF('p', 'mm', 'a4');
+
+//     // Add first part of grid to first page
+//     if (imageDataUrlJPEG1) {
+//       const scaleFactor = getScaleFactor(imageDataUrlJPEG1, 210, 297); // Dimensions of A4 paper in mm
+//       doc.addImage(imageDataUrlJPEG1, 'JPEG', 0, 0, 210, 297, null, 'NONE', 0, scaleFactor);
+//       doc.addPage();
+//     }
+
+//     // Add second part of grid to second page
+//     if (imageDataUrlJPEG2) {
+//       const scaleFactor = getScaleFactor(imageDataUrlJPEG2, 210, 297); // Dimensions of A4 paper in mm
+//       doc.addImage(imageDataUrlJPEG2, 'JPEG', 0, 0, 210, 297, null, 'NONE', 0, scaleFactor);
+//     }
+
+//     doc.save('image.pdf');
+//   } catch (error) {
+//     console.error('Error converting SVG to PDF:', error);
+//   }
+// };
+
+
+// const handleDownload = async () => {
+//   try {
+//     const doc = new jsPDF('p', 'mm', 'a4');
+
+//     // Access the SVG element using svgRef2
+//     const svgElement = svgRef2.current;
+
+//     // Convert the SVG to image data URLs
+//     const imageDataUrls = await convertSvgToImage(svgElement);
+
+//     // Add each part of the grid to separate pages
+//     imageDataUrls.forEach((imageDataUrl) => {
+//       const scaleFactor = getScaleFactor(imageDataUrl, 210, 297); // Dimensions of A4 paper in mm
+//       doc.addImage(imageDataUrl, 'JPEG', 0, 0, 210, 297, null, 'NONE', 0, scaleFactor);
+//       doc.addPage();
+//     });
+
+//     // Save the PDF
+//     doc.save('image.pdf');
+//   } catch (error) {
+//     console.error('Error converting SVG to PDF:', error);
+//   }
+// };
+
+// const getScaleFactor = (imageDataUrl, widthMM, heightMM) => {
+//   const img = new Image();
+//   img.src = imageDataUrl;
+//   const imgWidth = img.width;
+//   const imgHeight = img.height;
+//   const scaleWidth = widthMM / (imgWidth / 25.4); // Convert width from pixels to mm
+//   const scaleHeight = heightMM / (imgHeight / 25.4); // Convert height from pixels to mm
+//   return Math.min(scaleWidth, scaleHeight);
+// };
+
+// useEffect(() => {
+//   const convertSvgToImage = async () => {
+//     try {
+//       const svg = svgRef.current;
+//       const visibleWidth = 800;
+//       const visibleHeight = 1000;
+
+//       // Split the grid into two parts vertically
+//       const imageDataUrl1 = await getSvgImage(svg, 0, 0, visibleWidth, visibleHeight / 2);
+//       const imageDataUrl2 = await getSvgImage(svg, 0, visibleHeight / 2, visibleWidth, visibleHeight / 2);
+
+//       setImageDataUrlJPEG1(imageDataUrl1);
+//       setImageDataUrlJPEG2(imageDataUrl2);
+//     } catch (error) {
+//       console.error('Error converting SVG to image:', error);
+//     }
+//   };
+
+//   convertSvgToImage();
+// }, []);
+
+// const getSvgImage = (svg) => {
+//   return new Promise((resolve, reject) => {
+//     try {
+//       const svgString = new XMLSerializer().serializeToString(svg);
+//       const img = new Image();
+//       img.onload = () => {
+//         const canvas = document.createElement('canvas');
+//         const context = canvas.getContext('2d');
+//         // Use the SVG's computed bounding box to get its dimensions
+//         const svgBoundingBox = svg.getBoundingClientRect();
+//         canvas.width = svgBoundingBox.width;
+//         canvas.height = svgBoundingBox.height;
+//         context.drawImage(img, 0, 0, canvas.width, canvas.height);
+//         resolve(canvas.toDataURL('image/jpeg', 0.8));
+//       };
+//       img.src = 'data:image/svg+xml;base64,' + btoa(svgString);
+//     } catch (error) {
+//       reject(error);
+//     }
+//   });
+// };

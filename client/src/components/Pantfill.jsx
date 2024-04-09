@@ -9,6 +9,7 @@ import {
   setFrontViewPoints,
   setbackviewpoints,
   setgridviewpoints,
+  setcustomiseduservalues,
 } from "../context/TrouserSlice";
 import Checkoutpage from "./Checkoutpage";
 const Pantfill = () => {
@@ -54,7 +55,7 @@ const Pantfill = () => {
       dispatch(setFrontViewPoints(data.filteredPoints));
       dispatch(setbackviewpoints(data.filteredbackviewPoints));
       dispatch(setgridviewpoints(data.filteredgridviewPoints));
-
+      dispatch(setcustomiseduservalues(values))
       dispatch(setObjlenForVector(Object.keys(data.calculatedPoints).length));
       setShowcheckout(!showcheckout);
       console.log(showcheckout);

@@ -1,82 +1,225 @@
 import { useSelector } from "react-redux";
 import "../styles/style.css";
 import Navbar from "../components/Navbar";
-import { useRef } from 'react';
+import {  useRef, useState} from 'react';
 import { jsPDF } from 'jspdf';
+
+
 const Vectorimagecomponent = () => {
   const svgRef = useRef(null);
+  const svgRefFront = useRef(null);
+  const frontviewpoints = useSelector((state) => state.trouser.frontviewpoints);
+  const [imageDataUrlJPEG, setImageDataUrlJPEG] = useState(null);
 
 
-    // Function to handle download
+
+
+
+
   const handleDownloadimage = () => {
     const svg = svgRef.current;
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
 
-    // Set canvas size to match SVG
-    canvas.width = svg.width.baseVal.value;
-    canvas.height = svg.height.baseVal.value;
+    // Get the width and height of the SVG
+    const svgWidth = svg.width.baseVal.value;
+    const svgHeight = svg.height.baseVal.value;
 
-    // Draw SVG onto canvas
+    // Create the first canvas for the first half of the SVG
+    const canvas1 = document.createElement('canvas');
+    const ctx1 = canvas1.getContext('2d');
+    canvas1.width = svgWidth / 2;
+    canvas1.height = svgHeight;
+
+    // Draw first half of SVG onto canvas1
     const svgData = new XMLSerializer().serializeToString(svg);
-    const img = new Image();
-    img.onload = () => {
-      ctx.drawImage(img, 0, 0);
+    const img1 = new Image();
+    img1.onload = () => {
+      ctx1.drawImage(img1, 0, 0, canvas1.width, canvas1.height, 0, 0, canvas1.width, canvas1.height);
 
-      // Convert canvas to data URL
-      const dataUrl = canvas.toDataURL('image/png');
+      // Convert canvas1 to data URL
+      const dataUrl1 = canvas1.toDataURL('image/png');
 
-      // Trigger download
-      const link = document.createElement('a');
-      link.download = 'image.png';
-      link.href = dataUrl;
-      link.click();
+      // Trigger download for first half
+      const link1 = document.createElement('a');
+      link1.download = 'image_part1.png';
+      link1.href = dataUrl1;
+      link1.click();
     };
-    img.src = 'data:image/svg+xml;base64,' + btoa(svgData);
+    img1.src = 'data:image/svg+xml;base64,' + btoa(svgData);
+
+    // Create the second canvas for the second half of the SVG
+    const canvas2 = document.createElement('canvas');
+    const ctx2 = canvas2.getContext('2d');
+    canvas2.width = svgWidth / 2;
+    canvas2.height = svgHeight;
+
+    // Draw second half of SVG onto canvas2
+    const img2 = new Image();
+    img2.onload = () => {
+      ctx2.drawImage(img2, svgWidth / 2, 0, canvas2.width, canvas2.height, 0, 0, canvas2.width, canvas2.height);
+
+      // Convert canvas2 to data URL
+      const dataUrl2 = canvas2.toDataURL('image/png');
+
+      // Trigger download for second half
+      const link2 = document.createElement('a');
+      link2.download = 'image_part2.png';
+      link2.href = dataUrl2;
+      link2.click();
+    };
+    img2.src = 'data:image/svg+xml;base64,' + btoa(svgData);
   };
 
+  const convertSvgToImage = async () => {
+    try {
+      const svg = svgRefFront.current;
+      console.log(svgRefFront.current)
+      const visibleWidth = svg.width.baseVal.value;
+      const visibleHeight = svg.height.baseVal.value;
 
-  // Function to handle download
-const handleDownload = async () => {
-  const svg = svgRef.current;
+      // Split the grid into two parts vertically
+      const imageDataUrl = await getSvgImage(svg, 0, 0, visibleWidth, visibleHeight);
 
+      setImageDataUrlJPEG(imageDataUrl);
+      console.log(imageDataUrl)
+    } catch (error) {
+      console.error('Error converting SVG to image:', error);
+    }
+  };
+
+const downloadPDF = async () => {
   try {
-    // Convert SVG to JPEG image with specified quality (0.8)
-    const imageDataUrlJPEG = await convertSvgToImage(svg, 'image/jpeg', 0.8);
+    const doc = new jsPDF('p', 'mm', 'A4');
+    await convertSvgToImage();
+        // Define common styles
+    const commonStyle = {
+      font: "helvetica",
+      fontStyle: "normal",
+      fontWeight: "normal",
+      fontSize: 12,
+      lineHeight: 1.5,
+      textColor: "#000000",
+      borderColor: "#000000",
+      borderWidth: 0.5 // New: Border width for the entire document
+    };
 
-    // Create new jsPDF instance
-    const doc = new jsPDF();
+    // Add border for the entire document
+    doc.setDrawColor(commonStyle.borderColor);
+    doc.setLineWidth(commonStyle.borderWidth);
+    doc.rect(0, 0, doc.internal.pageSize.width, doc.internal.pageSize.height, "S"); // S: Stroke
 
-    // Add image to PDF
-    doc.addImage(imageDataUrlJPEG, 'JPEG', 0, 0);
+    // Add heading with cursive font and pink color
+    const headingStyle = {
+      font: "times", // Change font to cursive
+      fontStyle: "italic", // Set font style to italic
+      fontSize: 20, // Increase font size
+      textColor: "#ff69b4" // Pink color
+    };
+    doc.setFont(headingStyle.font, headingStyle.fontStyle);
+    doc.setFontSize(headingStyle.fontSize);
+    doc.setTextColor(headingStyle.textColor);
+    doc.text("Tomorrow's Tailor ", 70, 20); // Adjust position as needed
 
-    // Save PDF
-    doc.save('image.pdf');
+    // Add information about tomorrow's tailor
+    doc.setFont(commonStyle.font, commonStyle.fontStyle, commonStyle.fontWeight);
+    doc.setFontSize(16);
+    doc.setTextColor(commonStyle.textColor);
+    doc.text("Information about user customised values", 10, 40); // Adjust position as needed
+
+    // Add customised values with borders and styling
+    let yPos = 60; // Adjust starting position
+    const labels = ["Waist", "Hip", "Waist to Hip", "Body Rise", "Waist to Floor", "Trouser Bottom Width"];
+    const keys = ["A", "B", "C", "D", "E", "F"];
+    const cellWidth = 80;
+    const cellHeight = 15;
+
+    labels.forEach((label, index) => {
+      // Draw border for each cell
+      doc.setDrawColor(commonStyle.borderColor);
+      doc.setLineWidth(commonStyle.borderWidth);
+      doc.rect(10, yPos + index * cellHeight, cellWidth, cellHeight, "D");
+
+      // Draw label
+      doc.setFont(commonStyle.font, commonStyle.fontStyle, commonStyle.fontWeight);
+      doc.setFontSize(commonStyle.fontSize);
+      doc.setTextColor(commonStyle.textColor);
+      doc.text(label, 12, yPos + index * cellHeight + 8);
+
+      // Draw customised value
+      doc.setFont(commonStyle.font, "normal", commonStyle.fontWeight);
+      doc.text(customisedvalues[keys[index]], 95, yPos + index * cellHeight + 8);
+    });
+    doc.addPage();
+
+    // Save the PDF
+
+    console.log(imageDataUrlJPEG);
+    if (imageDataUrlJPEG) {
+      const img = new Image();
+      img.src = imageDataUrlJPEG;
+      img.onload = () => {
+        // Calculate scaling factors for width and height to fill the entire page
+        const scaleFactorWidth = doc.internal.pageSize.width / img.width;
+        const scaleFactorHeight = doc.internal.pageSize.height / img.height;
+        const scaleFactor = Math.max(scaleFactorWidth, scaleFactorHeight);
+
+        // Calculate new dimensions for the image
+        const newWidth = img.width * scaleFactor;
+        const newHeight = img.height * scaleFactor;
+
+        // Calculate position to center the image on the page
+        const x = (doc.internal.pageSize.width - newWidth) / 2;
+        const y = (doc.internal.pageSize.height - newHeight) / 2;
+
+        // Add the image to the PDF
+        doc.addImage(imageDataUrlJPEG, 'JPEG', x, y, newWidth, newHeight);
+        
+        // Save the PDF
+        doc.save("tailor_info.pdf");
+        // Upload the PDF to the backend
+        console.log(doc)
+      };
+    }
   } catch (error) {
-    console.error('Error converting SVG to image:', error);
+    console.error('Error converting SVG to PDF:', error);
   }
 };
 
-const convertSvgToImage = async (svg, format = 'image/png', quality = 1) => {
+
+
+
+// const getScaleFactor = (imgWidth, imgHeight, pageWidthMM, pageHeightMM) => {
+//   const scaleWidth = pageWidthMM / (imgWidth / 25.4); // Convert width from pixels to mm
+//   const scaleHeight = pageHeightMM / (imgHeight / 25.4); // Convert height from pixels to mm
+//   return Math.min(scaleWidth, scaleHeight);
+// };
+
+
+const getSvgImage = (svg) => {
   return new Promise((resolve, reject) => {
     try {
       const svgString = new XMLSerializer().serializeToString(svg);
+      
+      // Add a white background to the SVG
+      const svgWithBackground = `<svg xmlns="http://www.w3.org/2000/svg" width="${svg.width.baseVal.value}" height="${svg.height.baseVal.value}" viewBox="0 0 ${svg.width.baseVal.value} ${svg.height.baseVal.value}" style="background-color: #ffffff" transform="scale(1, -1)">${svgString}</svg>`;
+      
       const img = new Image();
       img.onload = () => {
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
-        canvas.width = img.width;
-        canvas.height = img.height;
-        context.drawImage(img, 0, 0);
-        resolve(canvas.toDataURL(format, quality));
+        // Use the SVG's computed bounding box to get its dimensions
+        const svgBoundingBox = svg.getBoundingClientRect();
+        canvas.width = svgBoundingBox.width;
+        canvas.height = svgBoundingBox.height;
+        context.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', 0.8));
       };
-      img.onerror = reject;
-      img.src = 'data:image/svg+xml;base64,' + btoa(svgString);
+      img.src = 'data:image/svg+xml;base64,' + btoa(svgWithBackground);
     } catch (error) {
       reject(error);
     }
   });
 };
+
 
 
   const pairs = [
@@ -99,21 +242,15 @@ const convertSvgToImage = async (svg, format = 'image/png', quality = 1) => {
   const calculatedPoints = useSelector(
     (state) => state.trouser.calculatedPoints
   );
-  const frontviewpoints = useSelector((state) => state.trouser.frontviewpoints);
   const objlenForVector = useSelector((state) => state.trouser.objlenForVector);
   const backviewpoints = useSelector((state) => state.trouser.backviewpoints);
   const gridviewpoints = useSelector((state) => state.trouser.gridviewpoints);
-
+  const customisedvalues= useSelector((state) => state.trouser.customiseduservalues);
   
   console.log("Calculated Points:", calculatedPoints);
   console.log("Object Length for Vector:", objlenForVector);
   console.log("front view points:", frontviewpoints)
-
-
-
-  
-
-
+  console.log("user values", customisedvalues)
 
 
   const generateFrontview = () => {
@@ -126,21 +263,21 @@ const convertSvgToImage = async (svg, format = 'image/png', quality = 1) => {
       if (u===6 && v===9) {
         const { x: x1, y: y1 } = point1;
         const { x: x2, y: y2 } = point2;
-        const d = `M${x1} ${y1} A9 5, 0, 0 0, ${x2} ${y2}`;
+        const d = `M${x1} ${y1} A9 6, 0, 0 0, ${x2} ${y2}`;
         lines.push(
           <path d={d} stroke="Black" strokeWidth="0.505" fill="none" strokeDasharray="4,1"/> 
         );
       }else if(u===8 && v===11){
         const { x: x1, y: y1 } = point1;
         const { x: x2, y: y2 } = point2;
-        const d = `M${x1} ${y1} A14 28, 0, 0 1, ${x2} ${y2}`;
+        const d = `M${x1} ${y1} A24 48, 0, 0 1, ${x2} ${y2}`;
         lines.push(
           <path d={d} stroke="Black" strokeWidth="0.505" fill="none" strokeDasharray="4,1"/> 
         );
       }else if(u===9 && v===15){
         const { x: x1, y: y1 } = point1;
         const { x: x2, y: y2 } = point2;
-        const d = `M${x1} ${y1} A60 45, 0, 0 0, ${x2} ${y2}`;
+        const d = `M${x1} ${y1} A60 55, 0, 0 0, ${x2} ${y2}`;
         lines.push(
           <path d={d} stroke="Black" strokeWidth="0.505" fill="none" strokeDasharray="4,1"/> 
         );
@@ -212,21 +349,21 @@ const convertSvgToImage = async (svg, format = 'image/png', quality = 1) => {
       if (u===6 && v===9) {
         const { x: x1, y: y1 } = point1;
         const { x: x2, y: y2 } = point2;
-        const d = `M${x1} ${y1+110} A9 5, 0, 0 0, ${x2} ${y2+110}`;
+        const d = `M${x1} ${y1+110} A9 6, 0, 0 0, ${x2} ${y2+110}`;
         lines.push(
           <path d={d} stroke="Black" strokeWidth="0.503" fill="none"/> 
         );
       }else if(u===8 && v===11){
         const { x: x1, y: y1 } = point1;
         const { x: x2, y: y2 } = point2;
-        const d = `M${x1} ${y1+110} A14 28, 0, 0 1, ${x2} ${y2+110}`;
+        const d = `M${x1} ${y1+110} A24 48, 0, 0 1, ${x2} ${y2+110}`;
         lines.push(
           <path d={d} stroke="Black" strokeWidth="0.505" fill="none"/> 
         );
       }else if(u===9 && v===15){
         const { x: x1, y: y1 } = point1;
         const { x: x2, y: y2 } = point2;
-        const d = `M${x1} ${y1+110} A60 45, 0, 0 0, ${x2} ${y2+110}`;
+        const d = `M${x1} ${y1+110} A60 55, 0, 0 0, ${x2} ${y2+110}`;
         lines.push(
           <path d={d} stroke="Black" strokeWidth="0.505" fill="none"/> 
         );
@@ -296,28 +433,28 @@ const convertSvgToImage = async (svg, format = 'image/png', quality = 1) => {
       if (u===19 && v===24) {
         const { x: x1, y: y1 } = point1;
         const { x: x2, y: y2 } = point2;
-        const d = `M${x1} ${y1} A11 16, 0, 0 0, ${x2} ${y2}`;
+        const d = `M${x1} ${y1} A9 16, 0, 0 0, ${x2} ${y2}`;
         lines.push(
           <path d={d} stroke="Black" strokeWidth="0.505" fill="none"/> 
         );
       }else if(u===24 && v===29){
         const { x: x1, y: y1 } = point1;
         const { x: x2, y: y2 } = point2;
-        const d = `M${x1} ${y1} A100 125, 0, 0 0, ${x2} ${y2}`;
+        const d = `M${x1} ${y1} A50 125, 0, 0 0, ${x2} ${y2}`;
         lines.push(
           <path d={d} stroke="Black" strokeWidth="0.505" fill="none" /> 
         );
       }else if(u===22 && v===25){
         const { x: x1, y: y1 } = point1;
         const { x: x2, y: y2 } = point2;
-        const d = `M${x1} ${y1} A120 80 , 0, 0 0, ${x2} ${y2}`;
+        const d = `M${x1} ${y1} A65 80 , 0, 0 0, ${x2} ${y2}`;
         lines.push(
           <path d={d} stroke="Black" strokeWidth="0.505" fill="none" /> 
         );
       }else if(u===25 && v===27){
         const { x: x1, y: y1 } = point1;
         const { x: x2, y: y2 } = point2;
-        const d = `M${x1} ${y1} A70 140 , 0, 0 1, ${x2} ${y2}`;
+        const d = `M${x1} ${y1} A55 145 , 0, 0 1, ${x2} ${y2}`;
         lines.push(
           <path d={d} stroke="Black" strokeWidth="0.505" fill="none" /> 
         );
@@ -417,28 +554,28 @@ const convertSvgToImage = async (svg, format = 'image/png', quality = 1) => {
       if (u===19 && v===24) {
         const { x: x1, y: y1 } = point1;
         const { x: x2, y: y2 } = point2;
-        const d = `M${x1+55} ${y1+110} A11 16, 0, 0 0, ${x2+55} ${y2+110}`;
+        const d = `M${x1+55} ${y1+110} A9 16, 0, 0 0, ${x2+55} ${y2+110}`;
         lines.push(
           <path d={d} stroke="Black" strokeWidth="0.505" fill="none"/> 
         );
       }else if(u===24 && v===29){
         const { x: x1, y: y1 } = point1;
         const { x: x2, y: y2 } = point2;
-        const d = `M${x1+55} ${y1+110} A100 125, 0, 0 0, ${x2+55} ${y2+110}`;
+        const d = `M${x1+55} ${y1+110} A50 125, 0, 0 0, ${x2+55} ${y2+110}`;
         lines.push(
           <path d={d} stroke="Black" strokeWidth="0.505" fill="none" /> 
         );
       }else if(u===22 && v===25){
         const { x: x1, y: y1 } = point1;
         const { x: x2, y: y2 } = point2;
-        const d = `M${x1+55} ${y1+110} A120 80 , 0, 0 0, ${x2+55} ${y2+110}`;
+        const d = `M${x1+55} ${y1+110} A65 80 , 0, 0 0, ${x2+55} ${y2+110}`;
         lines.push(
           <path d={d} stroke="Black" strokeWidth="0.505" fill="none" /> 
         );
       }else if(u===25 && v===27){
         const { x: x1, y: y1 } = point1;
         const { x: x2, y: y2 } = point2;
-        const d = `M${x1+55} ${y1+110} A70 140 , 0, 0 1, ${x2+55} ${y2+110}`;
+        const d = `M${x1+55} ${y1+110} A55 145 , 0, 0 1, ${x2+55} ${y2+110}`;
         lines.push(
           <path d={d} stroke="Black" strokeWidth="0.505" fill="none" /> 
         );
@@ -547,7 +684,6 @@ const convertSvgToImage = async (svg, format = 'image/png', quality = 1) => {
     }
     return lines;
   };
-
 
 
 
@@ -1091,14 +1227,17 @@ return (
     </div>
     {/* Button to trigger download */}
     <div className="grid-d pt-20">
-      <button className="download-button" onClick={handleDownload}>Download PDF</button>
+      <button className="download-button" onClick={downloadPDF}>Download PDF2</button>
       <button className="download-button" onClick={handleDownloadimage}>Download Image</button>
     </div>
 
+<div>
+      <svg ref={svgRefFront} width="800" height="1000" viewBox="-0 -115 130 240.0034" baseProfile="full" xmlns="http://www.w3.org/2000/svg" transform="scale(1, -1)" >
+        {generateFrontview()}
+      </svg>
+    </div>
+  
   </>
-);
-
-
-};
+);};
 
 export default Vectorimagecomponent;

@@ -7,6 +7,7 @@ const cors = require("cors");
 const Formula = require("./model/Formula");
 const formulasRoute = require("./routes/formulasRoute");
 const userRoute = require("./routes/userRoute");
+const Pdf = require("./model/pdfSchema")
 // const User = require("./models/User");
 
 const app = express();
@@ -40,8 +41,10 @@ app.use("/trouser", formulasRoute);
 //   .catch((error) => {
 //     console.error("Error checking formulas in the database:", error);
 //   });
-
 //
+
+
+
 app.listen(PORT, () => {
   connectDB();
   console.log(`Server running on port ${PORT}`);

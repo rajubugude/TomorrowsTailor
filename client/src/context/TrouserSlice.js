@@ -9,6 +9,7 @@ export const trouserSlice = createSlice({
     backviewpoints: {},
     gridviewpoints: {},
     formulae:{},
+    customiseduservalues:{},
   },
   reducers: {
     setCalculatedPoints: (state, action) => {
@@ -30,6 +31,9 @@ export const trouserSlice = createSlice({
     setformulae: (state, action) => {
       state.formulae = action.payload;
     },
+    setcustomiseduservalues: (state, action) => {
+      state.customiseduservalues = action.payload;
+    },
   },
 });
 
@@ -40,7 +44,8 @@ export const {
   setObjlenForVector,
   setbackviewpoints,
   setgridviewpoints,
-  setformulae
+  setformulae,
+  setcustomiseduservalues
 } = trouserSlice.actions;
 
 export default trouserSlice.reducer;
