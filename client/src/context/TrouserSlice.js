@@ -10,6 +10,7 @@ export const trouserSlice = createSlice({
     gridviewpoints: {},
     formulae:{},
     customiseduservalues:{},
+    calculatedPointsPixels:{},
   },
   reducers: {
     setCalculatedPoints: (state, action) => {
@@ -34,6 +35,9 @@ export const trouserSlice = createSlice({
     setcustomiseduservalues: (state, action) => {
       state.customiseduservalues = action.payload;
     },
+    setcalculatedPointsPixels:(state, action) => {
+      state.calculatedPointsPixels = action.payload;
+    }
   },
 });
 
@@ -45,7 +49,8 @@ export const {
   setbackviewpoints,
   setgridviewpoints,
   setformulae,
-  setcustomiseduservalues
+  setcustomiseduservalues,
+  setcalculatedPointsPixels,
 } = trouserSlice.actions;
 
 export default trouserSlice.reducer;

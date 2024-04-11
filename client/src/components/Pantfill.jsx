@@ -10,6 +10,7 @@ import {
   setbackviewpoints,
   setgridviewpoints,
   setcustomiseduservalues,
+  setcalculatedPointsPixels
 } from "../context/TrouserSlice";
 import Checkoutpage from "./Checkoutpage";
 const Pantfill = () => {
@@ -31,6 +32,7 @@ const Pantfill = () => {
     });
   };
 
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -50,8 +52,9 @@ const Pantfill = () => {
       }
       const data = response.data;
       console.log(data.calculatedPoints);
-      console.log(data.filteredPoints);
+      console.log(data.calculatedPointsPixels);
       dispatch(setCalculatedPoints(data.calculatedPoints));
+      dispatch(setcalculatedPointsPixels(data.calculatedPointsPixels));
       dispatch(setFrontViewPoints(data.filteredPoints));
       dispatch(setbackviewpoints(data.filteredbackviewPoints));
       dispatch(setgridviewpoints(data.filteredgridviewPoints));
@@ -59,7 +62,6 @@ const Pantfill = () => {
       dispatch(setObjlenForVector(Object.keys(data.calculatedPoints).length));
       setShowcheckout(!showcheckout);
       console.log(showcheckout);
-      // navigate("/vector-image");
     } catch (error) {
       console.error("Error fetching calculated points:", error);
     }

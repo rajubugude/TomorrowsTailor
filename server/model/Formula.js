@@ -156,6 +156,14 @@ const sampleFormulas = [
       y: (- 0.5 * D - 0.5 * E - 5 -C)/2,
     }),
   },
+      {
+    key: "38",
+    expression: (A, B, C, D, E, F) => ({ x: -(B / 12) - 1 + 4 , y: 0 }),
+  },
+      {
+    key: "39",
+    expression: (A, B, C, D, E, F) => ({ x: -(F / 2) - 0.5 + 6 , y: -E }),
+  },
 ];
 
 

@@ -5,13 +5,18 @@ import {  useRef, useState} from 'react';
 import { jsPDF } from 'jspdf';
 import axios from "axios"
 import { URL } from "../url";
+// import svgToImg from 'svg-to-img';
 
 
 const Vectorimagecomponent = () => {
   const svgRef = useRef(null);
   const svgRefFront = useRef(null);
+  const svgRefFront2 = useRef(null);
+
   const frontviewpoints = useSelector((state) => state.trouser.frontviewpoints);
+  // const calculatedPointsPixels= useSelector((state) => state.trouser.calculatedPointsPixels)
   const [imageDataUrlJPEG, setImageDataUrlJPEG] = useState(null);
+  // const [svgurl, setSVGURL]= useState("");
 
 
 
@@ -89,116 +94,108 @@ const uploadPDFToBackend = async (pdfFile) => {
     img2.src = 'data:image/svg+xml;base64,' + btoa(svgData);
   };
 
-  const convertSvgToImage = async () => {
-    try {
-      const svg = svgRefFront.current;
-      console.log(svgRefFront.current)
-      const visibleWidth = svg.width.baseVal.value;
-      const visibleHeight = svg.height.baseVal.value;
+const convertSvgToImage = async () => {
+  try {
+    const svg = svgRefFront.current;
 
-      // Split the grid into two parts vertically
-      const imageDataUrl = await getSvgImage(svg, 0, 0, visibleWidth, visibleHeight);
+    // Split the grid into two parts vertically
+    const imageDataUrl = await getSvgImage(svg);
 
-      setImageDataUrlJPEG(imageDataUrl);
-      console.log(imageDataUrl)
-    } catch (error) {
-      console.error('Error converting SVG to image:', error);
-    }
-  };
+    setImageDataUrlJPEG(imageDataUrl);
+    console.log(imageDataUrl);
+  } catch (error) {
+    console.error('Error converting SVG to image:', error);
+  }
+};
+
+
+  
 
 const downloadPDF = async () => {
   try {
-    const doc = new jsPDF('p', 'mm', 'A4');
+    const doc = new jsPDF({
+      orientation: 'portrait',
+      unit: 'cm',
+      format: [23,30]
+    });
+
     await convertSvgToImage();
-        // Define common styles
+
+    // Define common styles
     const commonStyle = {
       font: "helvetica",
       fontStyle: "normal",
       fontWeight: "normal",
-      fontSize: 12,
+      fontSize: 10, // Increase font size for better readability
       lineHeight: 1.5,
       textColor: "#000000",
       borderColor: "#000000",
-      borderWidth: 0.5 // New: Border width for the entire document
+      borderWidth: 0.05
     };
 
     // Add border for the entire document
     doc.setDrawColor(commonStyle.borderColor);
     doc.setLineWidth(commonStyle.borderWidth);
-    doc.rect(0, 0, doc.internal.pageSize.width, doc.internal.pageSize.height, "S"); // S: Stroke
+    doc.rect(0, 0, 23, 30, "S");
 
     // Add heading with cursive font and pink color
     const headingStyle = {
-      font: "times", // Change font to cursive
-      fontStyle: "italic", // Set font style to italic
-      fontSize: 20, // Increase font size
-      textColor: "#ff69b4" // Pink color
+      font: "times",
+      fontStyle: "italic",
+      fontSize: 16, // Increase font size for heading
+      textColor: "#ff69b4"
     };
     doc.setFont(headingStyle.font, headingStyle.fontStyle);
     doc.setFontSize(headingStyle.fontSize);
     doc.setTextColor(headingStyle.textColor);
-    doc.text("Tomorrow's Tailor ", 70, 20); // Adjust position as needed
+    doc.text("Tomorrow's Tailor ", 5, 2); // Adjust position as needed
 
     // Add information about tomorrow's tailor
     doc.setFont(commonStyle.font, commonStyle.fontStyle, commonStyle.fontWeight);
-    doc.setFontSize(16);
+    doc.setFontSize(16); // Increase font size for information
     doc.setTextColor(commonStyle.textColor);
-    doc.text("Information about user customised values", 10, 40); // Adjust position as needed
+    doc.text("Information about user customised values", 1, 4); // Adjust position as needed
 
     // Add customised values with borders and styling
-    let yPos = 60; // Adjust starting position
+    let yPos = 6; // Adjust starting position
     const labels = ["Waist", "Hip", "Waist to Hip", "Body Rise", "Waist to Floor", "Trouser Bottom Width"];
     const keys = ["A", "B", "C", "D", "E", "F"];
-    const cellWidth = 80;
-    const cellHeight = 15;
+    const cellWidth = 8;
+    const cellHeight = 2;
 
     labels.forEach((label, index) => {
       // Draw border for each cell
       doc.setDrawColor(commonStyle.borderColor);
       doc.setLineWidth(commonStyle.borderWidth);
-      doc.rect(10, yPos + index * cellHeight, cellWidth, cellHeight, "D");
+      doc.rect(1, yPos + index * cellHeight, cellWidth, cellHeight, "D");
 
       // Draw label
       doc.setFont(commonStyle.font, commonStyle.fontStyle, commonStyle.fontWeight);
       doc.setFontSize(commonStyle.fontSize);
       doc.setTextColor(commonStyle.textColor);
-      doc.text(label, 12, yPos + index * cellHeight + 8);
+      doc.text(label, 1.3, yPos + index * cellHeight + 1); // Adjust position as needed
 
       // Draw customised value
       doc.setFont(commonStyle.font, "normal", commonStyle.fontWeight);
-      doc.text(customisedvalues[keys[index]], 95, yPos + index * cellHeight + 8);
+      doc.text(customisedvalues[keys[index]], 9, yPos + index * cellHeight + 1); // Adjust position as needed
     });
+
     doc.addPage();
 
-    // Save the PDF
-
     console.log(imageDataUrlJPEG);
+
     if (imageDataUrlJPEG) {
-      const img = new Image();
-      img.src = imageDataUrlJPEG;
-      img.onload = () => {
-        // Calculate scaling factors for width and height to fill the entire page
-        const scaleFactorWidth = doc.internal.pageSize.width / img.width;
-        const scaleFactorHeight = doc.internal.pageSize.height / img.height;
-        const scaleFactor = Math.max(scaleFactorWidth, scaleFactorHeight);
+      const pdfWidth = doc.internal.pageSize.getWidth();
+      const pdfHeight = doc.internal.pageSize.getHeight();
 
-        // Calculate new dimensions for the image
-        const newWidth = img.width * scaleFactor;
-        const newHeight = img.height * scaleFactor;
+      // Add the image to the PDF, fitting it to the entire page with a 1 cm margin
+      doc.addImage(imageDataUrlJPEG, 'JPEG', 3, 3, pdfWidth - 4, pdfHeight - 4, null, 'FAST');
 
-        // Calculate position to center the image on the page
-        const x = (doc.internal.pageSize.width - newWidth) / 2;
-        const y = (doc.internal.pageSize.height - newHeight) / 2;
+      // Save the PDF...
+      doc.save("tailor_info.pdf");
 
-        // Add the image to the PDF
-        doc.addImage(imageDataUrlJPEG, 'JPEG', x, y, newWidth, newHeight);
-        
-        // Save the PDF
-        doc.save("tailor_info.pdf");
-        // Upload the PDF to the backend
-        console.log(doc)
-        uploadPDFToBackend(doc.output('blob'));
-      };
+      // Upload the PDF to the backend...
+      uploadPDFToBackend(doc.output('blob'));
     }
   } catch (error) {
     console.error('Error converting SVG to PDF:', error);
@@ -206,32 +203,41 @@ const downloadPDF = async () => {
 };
 
 
-
-
-// const getScaleFactor = (imgWidth, imgHeight, pageWidthMM, pageHeightMM) => {
-//   const scaleWidth = pageWidthMM / (imgWidth / 25.4); // Convert width from pixels to mm
-//   const scaleHeight = pageHeightMM / (imgHeight / 25.4); // Convert height from pixels to mm
-//   return Math.min(scaleWidth, scaleHeight);
-// };
-
-
 const getSvgImage = (svg) => {
   return new Promise((resolve, reject) => {
     try {
       const svgString = new XMLSerializer().serializeToString(svg);
-      
-      // Add a white background to the SVG
-      const svgWithBackground = `<svg xmlns="http://www.w3.org/2000/svg" width="${svg.width.baseVal.value}" height="${svg.height.baseVal.value}" viewBox="0 0 ${svg.width.baseVal.value} ${svg.height.baseVal.value}" style="background-color: #ffffff" transform="scale(1, -1)">${svgString}</svg>`;
-      
+
+      // Calculate SVG dimensions in centimeters
+      const svgWidthCM = svg.width.baseVal.value / 96 * 2.54; // Assuming 96 DPI
+      const svgHeightCM = svg.height.baseVal.value / 96 * 2.54;
+
+      console.log(svgWidthCM, svgHeightCM);
+
+      // Calculate scaling factors for A4 dimensions
+      const a4WidthCM = 23; // A4 width in centimeters
+      const a4HeightCM = 30; // A4 height in centimeters
+      const scaleFactorWidth = a4WidthCM / svgWidthCM;
+      const scaleFactorHeight = a4HeightCM / svgHeightCM;
+      const scaleFactor = Math.max(scaleFactorWidth, scaleFactorHeight);
+
+      // Adjust SVG size to match A4 dimensions
+      const scaledWidth = svgWidthCM * scaleFactor;
+      const scaledHeight = svgHeightCM * scaleFactor;
+      console.log(scaledWidth, scaledHeight);
+      const offsetX = (a4WidthCM - scaledWidth) / 2;
+      const offsetY = (a4HeightCM - scaledHeight) / 2;
+      console.log(offsetX, offsetY)
+
+      const svgWithBackground = `<svg xmlns="http://www.w3.org/2000/svg" width="${scaledWidth-3}" height="${scaledHeight-3}" viewBox="0 0 ${svg.width.baseVal.value} ${svg.height.baseVal.value}" style="background-color: #ffffff" transform="scale(1, -1)">${svgString}</svg>`;
+
       const img = new Image();
       img.onload = () => {
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
-        // Use the SVG's computed bounding box to get its dimensions
-        const svgBoundingBox = svg.getBoundingClientRect();
-        canvas.width = svgBoundingBox.width;
-        canvas.height = svgBoundingBox.height;
-        context.drawImage(img, 0, 0, canvas.width, canvas.height);
+        canvas.width = a4WidthCM * 96 / 2.54; // A4 width in pixels (assuming 96 DPI)
+        canvas.height = a4HeightCM * 96 / 2.54; // A4 height in pixels
+        context.drawImage(img, offsetX * 96 / 2.54, offsetY * 96 / 2.54, scaledWidth * 96 / 2.54, scaledHeight * 96 / 2.54);
         resolve(canvas.toDataURL('image/jpeg', 0.8));
       };
       img.src = 'data:image/svg+xml;base64,' + btoa(svgWithBackground);
@@ -240,6 +246,8 @@ const getSvgImage = (svg) => {
     }
   });
 };
+
+
 
 
 
@@ -257,6 +265,8 @@ const getSvgImage = (svg) => {
     [30,30],
     [32,32],
     [33,33],
+    [6,6],
+    [8,8],
   ];
   const backpairs=[[21,22],[22,25],[25,27],[27,26],[26,28],[28,29],[24,29],[19,24],[19,21],[31,31],[34,34],[35,35],[36,36],[37,37]]
   const gridpairs=[[7,18],[18,17],[18,0],[0,22],[0,2],[2,25],[2,17],[17,6],[6,7],[17,16],[16,1],[1,2],[16,5],[5,23],[23,24],[24,29],[29,15],[15,4],[5,15],[4,1],[4,27],[4,3],[3,26],[3,28]]
@@ -381,7 +391,34 @@ const getSvgImage = (svg) => {
         lines.push(
           <path d={d} stroke="Black" strokeWidth="0.505" fill="none"/> 
         );
-      }else if(u===9 && v===15){
+      }else if(u===6 && v===6){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        console.log(x2, y2);
+        // const size = 1.5;
+
+        const pointStyle = {
+          fill: 'yellow', 
+        };
+        lines.push(
+              <circle cx={x1} cy={y1+110} r={0.6} style={pointStyle}/>
+        )
+      
+      }else if(u===8 && v===8){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        console.log(x2, y2);
+        // const size = 1.5;
+
+        const pointStyle = {
+          fill: 'yellow', 
+        };
+        lines.push(
+              <circle cx={x1} cy={y1+110} r={0.6} style={pointStyle}/>
+        )
+      
+      }
+      else if(u===9 && v===15){
         const { x: x1, y: y1 } = point1;
         const { x: x2, y: y2 } = point2;
         const d = `M${x1} ${y1+110} A60 55, 0, 0 0, ${x2} ${y2+110}`;
@@ -706,6 +743,98 @@ const getSvgImage = (svg) => {
     return lines;
   };
 
+  const pairsSplit1 = [
+    [10, 6],
+    [10, 38],
+    [6,9],
+    // [9, 15],
+    // [15, 14],
+    // [14, 39],
+    [30,30],
+    [32,32],
+    [33,33],
+  ];
+  const generateFrontFirstsplitview = () => {
+    const lines = [];
+    for (let i = 0; i < pairsSplit1.length; i++) {
+      const [u, v] = pairsSplit1[i];
+      const point1 = frontviewpoints[u];
+      const point2 = frontviewpoints[v];
+      console.log(point2.x, point2.y, )
+
+      if (u===6 && v===9) {
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        const d = `M${x1} ${y1+110} A9 6, 0, 0 0, ${x2} ${y2+110}`;
+        lines.push(
+          <path d={d} stroke="Black" strokeWidth="0.503" fill="none"/> 
+        );
+      }else if(u===9 && v===15){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        const d = `M${x1} ${y1+110} A60 55, 0, 0 0, ${x2} ${y2+110}`;
+        lines.push(
+          <path d={d} stroke="Black" strokeWidth="0.505" fill="none"/> 
+        );
+      }
+      else if(u===30 && v===30){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        console.log(x2, y2);
+        // const size = 1.5;
+
+        const pointStyle = {
+          fill: 'darkred', 
+        };
+        lines.push(
+              <circle cx={x1} cy={y1+110} r={0.6} style={pointStyle}/>
+        )
+      }
+      else if(u===32 && v===32){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        console.log(x2, y2);
+        // const size = 1.5;
+
+        const pointStyle = {
+          fill: 'darkred', 
+        };
+        lines.push(
+              <circle cx={x1} cy={y1+110} r={0.6} style={pointStyle}/>
+        )
+      }
+      else if(u===33 && v===33){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        console.log(x2, y2);
+        // const size = 1.5;
+
+        const pointStyle = {
+          fill: 'darkred', 
+        };
+        lines.push(
+              <circle cx={x1} cy={y1+110} r={0.6} style={pointStyle}/>
+        )
+      }
+      else{
+
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        lines.push(
+            <line
+            x1={x1}
+            y1={y1+110}
+            x2={x2}
+            y2={y2+110}
+            stroke="black"
+            strokeWidth="0.503"
+          />
+          );
+      }
+
+    }
+    return lines;
+  };
 
 
 
@@ -1248,13 +1377,27 @@ return (
     </div>
     {/* Button to trigger download */}
     <div className="grid-d pt-20">
+      {/* <button className="download-button" onClick={generateAndSendPDF}>Backend PDF</button> */}
+
       <button className="download-button" onClick={downloadPDF}>Download PDF2</button>
       <button className="download-button" onClick={handleDownloadimage}>Download Image</button>
     </div>
 
-<div>
-      <svg ref={svgRefFront} width="800" height="1000" viewBox="-0 -115 130 240.0034" baseProfile="full" xmlns="http://www.w3.org/2000/svg" transform="scale(1, -1)" >
-        {generateFrontview()}
+<div className="mt-80">
+      <svg ref={svgRefFront2} width="800" height="1000" viewBox="-0 -115 130 240.0034" baseProfile="full" xmlns="http://www.w3.org/2000/svg" transform="scale(1, -1)" >
+        {generateFront1view()}
+        {generateBackview()}
+      </svg>
+      <svg
+        ref={svgRefFront}
+        width="21cm"
+        height="29cm"
+        viewBox="-0 -115 130 240.0034"
+        baseProfile="full"
+        xmlns="http://www.w3.org/2000/svg"
+        transform="scale(1, -1)"
+      >
+        {generateFrontFirstsplitview()}
       </svg>
     </div>
   

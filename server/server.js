@@ -7,10 +7,15 @@ const cors = require("cors");
 const Formula = require("./model/Formula");
 const formulasRoute = require("./routes/formulasRoute");
 const userRoute = require("./routes/userRoute");
-const Pdf = require("./model/pdfSchema")
 // const User = require("./models/User");
 const multer = require('multer');
 const path = require('path');
+const PDFDocument = require('pdfkit');
+const svgToPdf = require('svg-to-pdfkit');
+const fs = require('fs');
+
+
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -44,6 +49,24 @@ app.use("/trouser", formulasRoute);
 //     console.error("Error checking formulas in the database:", error);
 //   });
 //
+
+// app.post('/generate-pdf', (req, res) => {
+//   const svgDataURI = req.body.svgURI.split(',')[1]; // Remove the "data:image/svg+xml;base64," prefix
+//   const svgContent = Buffer.from(svgDataURI, 'base64').toString('utf-8');
+
+//   const doc = new PDFDocument();
+//   doc.pipe(fs.createWriteStream('output.pdf'));
+
+//   svgToPdf(doc, svgContent, 0, 0, { preserveAspectRatio: 'xMinYMin meet' });
+
+//   doc.end();
+//   console.log("PDF generated successfully");
+//   res.send('PDF generated successfully!');
+// });
+
+
+
+
 
 // Set up storage for multer
 const storage = multer.diskStorage({

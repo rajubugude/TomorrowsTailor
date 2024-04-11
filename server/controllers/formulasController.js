@@ -26,6 +26,19 @@ const TrouserCalculation = asyncHandler(async (req, res) => {
 
       calculatedPoints[formula.key] = result;
     });
+
+    const calculatedPointsPixels={};
+    formulas.forEach((formula) => {
+      let expression = formula.expression;
+      // Substitute variable values into the expression
+      const expressionFunction = eval("(" + expression + ")");
+
+      // Evaluate the expression function with provided values
+      const result = expressionFunction(A*37.7952755906, B*37.7952755906, C*37.7952755906, D*37.7952755906, E*37.7952755906, F*37.7952755906);
+      console.log(result);
+
+      calculatedPointsPixels[formula.key] = result;
+    });
     // Define the keys of the points you want to send to the frontend
     const pointsToSend = [
       "3",
@@ -41,6 +54,8 @@ const TrouserCalculation = asyncHandler(async (req, res) => {
       "30",
       "32",
       "33",
+      "38",
+      "39",
 
 
     ]; // Add more keys as needed
@@ -104,15 +119,16 @@ const TrouserCalculation = asyncHandler(async (req, res) => {
       }
     });
 
-    console.log(filteredPoints);
     res.json({
       success: true,
       calculatedPoints,
       filteredPoints,
       filteredbackviewPoints,
       filteredgridviewPoints,
+      calculatedPointsPixels,
     });
     console.log(calculatedPoints);
+    console.log(calculatedPointsPixels);
   } catch (error) {
     console.error("Error calculating points:", error);
     res.status(500).json({ error: "An error occurred" });
