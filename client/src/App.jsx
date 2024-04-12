@@ -14,7 +14,7 @@ import AdminProtected from "./auth/AdminProtected";
 import AdminHome from "./admin/adminpages/AdminHome";
 import AdminDashboard from "./admin/components/adminDashboard";
 import AdminFormulaepage from "./admin/components/adminFormulaepage";
-// import YourComponent from "./components/new";
+import New from "./components/new";
 
 
 function App() {
@@ -25,7 +25,7 @@ function App() {
           <Routes>
             <Route exact path="/" element={<Login />} />
             <Route exact path="/register" element={<Register />} />
-            {/* <Route exact path="/new" element={<YourComponent />} /> */}
+            <Route exact path="/new" element={<New/>} />
 
             <Route
               exact
