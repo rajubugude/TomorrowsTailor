@@ -16,7 +16,7 @@ const Vectorimagecomponent = () => {
   const frontviewpoints = useSelector((state) => state.trouser.frontviewpoints);
   // const calculatedPointsPixels= useSelector((state) => state.trouser.calculatedPointsPixels)
   const [imageDataUrlJPEG, setImageDataUrlJPEG] = useState(null);
-  // const [imageDataUrlJPEG2, setImageDataUrlJPEG2] = useState(null);
+  const [imageDataUrlJPEG2, setImageDataUrlJPEG2] = useState(null);
 
   // const [svgurl, setSVGURL]= useState("");
 
@@ -119,7 +119,7 @@ const downloadPDF = async () => {
       lineHeight: 1.5,
       textColor: "#000000",
       borderColor: "#000000",
-      borderWidth: 0.05
+      borderWidth: 0.07
     };
 
     // Add border for the entire document with 3cm margin on all sides
@@ -173,22 +173,18 @@ const downloadPDF = async () => {
     });
 
     doc.addPage();
-
+    doc.text("Print Actual Size (100% Scale);", margin, margin)
     const svg = svgRefFront.current;
     const imageDataUrl = await getSvgImage(svg);
     setImageDataUrlJPEG(imageDataUrl);
-    doc.addImage(imageDataUrlJPEG, 'JPEG', margin, margin, pdfWidth - 2 * margin, pdfHeight - 3 * margin, null, 'FAST');
+    doc.addImage(imageDataUrlJPEG, 'JPEG', margin+3, margin, pdfWidth - 1 * margin, pdfHeight-1 * margin-1, null, 'FAST');
     doc.addPage();
-    // const svg2 = svgRefFront2.current;
-    // const imageDataUrl2 = await getSvgImage(svg2);
-    // setImageDataUrlJPEG2(imageDataUrl2);
-    // doc.addImage(imageDataUrlJPEG2, 'JPEG', margin, margin, pdfWidth - 2 * margin, pdfHeight - 2 * margin, null, 'FAST');
-    //   // Save the PDF...
-    //   console.log(imageDataUrlJPEG2)
-      doc.save("tailor_info.pdf");
-
-      // Upload the PDF to the backend...
-      uploadPDFToBackend(doc.output('blob'));
+    const svg2 = svgRefFront2.current;
+    const imageDataUrl2 = await getSvgImage(svg2);
+    setImageDataUrlJPEG2(imageDataUrl2);
+    doc.addImage(imageDataUrlJPEG2, 'JPEG', margin-8, margin, pdfWidth - 1 * margin, pdfHeight-1 * margin-1, null, 'FAST');
+    doc.save("tailor_info.pdf");
+    uploadPDFToBackend(doc.output('blob'));
 
   } catch (error) {
     console.error('Error converting SVG to PDF:', error);
@@ -203,26 +199,13 @@ const getSvgImage = (svg) => {
       const svgString = new XMLSerializer().serializeToString(svg);
 
       // Calculate SVG dimensions in centimeters
-      const svgWidthCM = (svg.width.baseVal.value)*10; // Assuming 96 DPI
-      const svgHeightCM = (svg.height.baseVal.value)*10; //;
+      const svgWidthCM = (svg.width.baseVal.value)*2; // Assuming 96 DPI
+      const svgHeightCM = (svg.height.baseVal.value)*2; //;
 
       console.log(svg.width.baseVal.value, svg.height.baseVal.value, svgWidthCM, svgHeightCM);
 
-      // Calculate scaling factor to fit SVG onto A4 page
       const a4WidthCM = 23; // A4 width in centimeters
       const a4HeightCM = 30; // A4 height in centimeters
-      // const scaleFactorWidth = a4WidthCM / svgWidthCM;
-      // const scaleFactorHeight = a4HeightCM / svgHeightCM;
-      // const scaleFactor = Math.min(scaleFactorWidth, scaleFactorHeight); // Use the smaller scale factor to ensure the SVG fits entirely onto the page
-
-      // Adjust SVG size to match A4 dimensions
-      // const scaledWidth = svgWidthCM * scaleFactor;
-      // const scaledHeight = svgHeightCM * scaleFactor;
-      // console.log(scaledWidth, scaledHeight);
-      // const offsetX = (a4WidthCM - scaledWidth) / 2;
-      // const offsetY = (a4HeightCM - scaledHeight) / 2;
-      // console.log(offsetX, offsetY)
-
       const svgWithBackground = `<svg xmlns="http://www.w3.org/2000/svg" width="${svgWidthCM}" height="${svgHeightCM}" viewBox="0 0 ${svg.width.baseVal.value} ${svg.height.baseVal.value}" style="background-color: #ffffff" transform="scale(1, -1)">${svgString}</svg>`;
 
       const img = new Image();
@@ -233,7 +216,6 @@ const getSvgImage = (svg) => {
         canvas.height = a4HeightCM * 96 / 2.54; // A4 height in pixels
         console.log(canvas.width,canvas.height)
         context.drawImage(img, 0, 0, svgWidthCM, svgHeightCM);
-        // console.log(img)
         resolve(canvas.toDataURL('image/jpeg', 0.8));
       };
       img.src = 'data:image/svg+xml;base64,' + btoa(svgWithBackground);
@@ -726,186 +708,7 @@ const getSvgImage = (svg) => {
     return lines;
   };
 
-  const pairsSplit1 = [
-    [10, 6],
-    [10, 38],
-    [6,6],
-    [38,38],
-    // [6,9],
-    // [9, 15],
-    // [15, 14],
-    // [14, 39],
-    [30,30],
-    [32,32],
-    [33,33],
-  ];
-    const pairsSplit2 = [
-    [38,11],
-    [8,11],
-    [30,30],
-    [32,32],
-    [33,33],
-  ];
-  const generateFrontFirstsplitview = () => {
-    const lines = [];
-    for (let i = 0; i < pairsSplit1.length; i++) {
-      const [u, v] = pairsSplit1[i];
-      const point1 = frontviewpoints[u];
-      const point2 = frontviewpoints[v];
 
-      if (u===6 && v===9) {
-        const { x: x1, y: y1 } = point1;
-        const { x: x2, y: y2 } = point2;
-        const d = `M${x1} ${y1+110} A9 6, 0, 0 0, ${x2} ${y2+110}`;
-        lines.push(
-          <path d={d} stroke="Black" strokeWidth="0.203" fill="none"/> 
-        );
-      }else if(u===9 && v===15){
-        const { x: x1, y: y1 } = point1;
-        const { x: x2, y: y2 } = point2;
-        const d = `M${x1} ${y1+110} A60 55, 0, 0 0, ${x2} ${y2+110}`;
-        lines.push(
-          <path d={d} stroke="Black" strokeWidth="0.203" fill="none"/> 
-        );
-      }else if(u===6 && v===6){
-        const { x: x1, y: y1 } = point1;
-
-        const pointStyle = {
-          fill: 'yellow', 
-        };
-        lines.push(
-              <circle cx={x1} cy={y1+110} r={0.3} style={pointStyle}/>
-        )
-      }else if(u===38 && v===38){
-        const { x: x1, y: y1 } = point1;
-
-        const pointStyle = {
-          fill: 'yellow', 
-        };
-        lines.push(
-              <circle cx={x1} cy={y1+110} r={0.3} style={pointStyle}/>
-        )
-      }
-      else if(u===30 && v===30){
-        const { x: x1, y: y1 } = point1;
-
-        const pointStyle = {
-          fill: 'darkred', 
-        };
-        lines.push(
-              <circle cx={x1} cy={y1+110} r={0.3} style={pointStyle}/>
-        )
-      }
-      else if(u===32 && v===32){
-        const { x: x1, y: y1 } = point1;
-
-        const pointStyle = {
-          fill: 'darkred', 
-        };
-        lines.push(
-              <circle cx={x1} cy={y1+110} r={0.3} style={pointStyle}/>
-        )
-      }
-      else if(u===33 && v===33){
-        const { x: x1, y: y1 } = point1;
-
-        const pointStyle = {
-          fill: 'darkred', 
-        };
-        lines.push(
-              <circle cx={x1} cy={y1+110} r={0.3} style={pointStyle}/>
-        )
-      }
-      else{
-
-        const { x: x1, y: y1 } = point1;
-        const { x: x2, y: y2 } = point2;
-        lines.push(
-            <line
-            x1={x1}
-            y1={y1+110}
-            x2={x2}
-            y2={y2+110}
-            stroke="black"
-            strokeWidth="0.203"
-          />
-          );
-      }
-
-    }
-    return lines;
-  };
-  const generateFrontSecondsplitview = () => {
-    const lines = [];
-    for (let i = 0; i < pairsSplit2.length; i++) {
-      const [u, v] = pairsSplit2[i];
-      const point1 = frontviewpoints[u];
-      const point2 = frontviewpoints[v];
-
-      if (u===6 && v===9) {
-        const { x: x1, y: y1 } = point1;
-        const { x: x2, y: y2 } = point2;
-        const d = `M${x1} ${y1+110} A9 6, 0, 0 0, ${x2} ${y2+110}`;
-        lines.push(
-          <path d={d} stroke="Black" strokeWidth="0.503" fill="none"/> 
-        );
-      }else if(u===8 && v===11){
-        const { x: x1, y: y1 } = point1;
-        const { x: x2, y: y2 } = point2;
-        const d = `M${x1} ${y1+110} A24 48, 0, 0 1, ${x2} ${y2+110}`;
-        lines.push(
-          <path d={d} stroke="Black" strokeWidth="0.505" fill="none"/> 
-        );
-      }
-      else if(u===30 && v===30){
-        const { x: x1, y: y1 } = point1;
-
-        const pointStyle = {
-          fill: 'darkred', 
-        };
-        lines.push(
-              <circle cx={x1} cy={y1+110} r={0.6} style={pointStyle}/>
-        )
-      }
-      else if(u===32 && v===32){
-        const { x: x1, y: y1 } = point1;
-
-        const pointStyle = {
-          fill: 'darkred', 
-        };
-        lines.push(
-              <circle cx={x1} cy={y1+110} r={0.6} style={pointStyle}/>
-        )
-      }
-      else if(u===33 && v===33){
-        const { x: x1, y: y1 } = point1;
-
-        const pointStyle = {
-          fill: 'darkred', 
-        };
-        lines.push(
-              <circle cx={x1} cy={y1+110} r={0.6} style={pointStyle}/>
-        )
-      }
-      else{
-
-        const { x: x1, y: y1 } = point1;
-        const { x: x2, y: y2 } = point2;
-        lines.push(
-            <line
-            x1={x1}
-            y1={y1+110}
-            x2={x2}
-            y2={y2+110}
-            stroke="black"
-            strokeWidth="0.503"
-          />
-          );
-      }
-
-    }
-    return lines;
-  };
 return (
   <>
   <Navbar/>
@@ -1463,60 +1266,11 @@ return (
         transform="scale(1, -1)"
         
       >
-        {generateFrontFirstsplitview()}
+        {generateFront1view()}
 
-      <g fill="none" stroke="Black">
-      {/* vertcal lines */}
-            <polyline shapeRendering="crispEdges" points="-1.3632, 86.0803 -1.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-2.3632, 86.0803 -2.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-3.3632, 86.0803 -3.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-4.3632, 86.0803 -4.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-5.3632, 86.0803 -5.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-6.3632, 86.0803 -6.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-7.3632, 86.0803 -7.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-8.3632, 86.0803 -8.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-9.3632, 86.0803 -9.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-10.3632, 86.0803 -10.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-11.3632, 86.0803 -11.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-12.3632, 86.0803 -12.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-13.3632, 86.0803 -13.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-14.3632, 86.0803 -14.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-15.3632, 86.0803 -15.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-16.3632, 86.0803 -16.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-17.3632, 86.0803 -17.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-18.3632, 86.0803 -18.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-19.3632, 86.0803 -19.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-20.3632, 86.0803 -20.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
 
-            {/* horizontal lines */}
-            <polyline shapeRendering="crispEdges" points="-40.3632, 89.0803 6.4795, 89.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-40.3632, 90.0803 6.4795, 90.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-40.3632, 91.0803 6.4795, 91.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-40.3632, 92.0803 6.4795, 92.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-40.3632, 93.0803 6.4795, 93.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-40.3632, 94.0803 6.4795, 94.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-40.3632, 95.0803 6.4795, 95.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-40.3632, 96.0803 6.4795, 96.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-40.3632, 97.0803 6.4795, 97.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-40.3632, 98.0803 6.4795, 98.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-40.3632, 99.0803 6.4795, 99.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-40.3632, 100.0803 6.4795, 100.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-40.3632, 101.0803 6.4795, 101.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-40.3632, 102.0803 6.4795, 102.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-40.3632, 103.0803 6.4795, 103.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-40.3632, 104.0803 6.4795, 104.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-40.3632, 105.0803 6.4795, 105.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-40.3632, 106.0803 6.4795, 106.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-40.3632, 107.0803 6.4795, 107.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-40.3632, 108.0803 6.4795, 108.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-40.3632, 109.0803 6.4795, 109.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-40.3632, 110.0803 6.4795, 110.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-40.3632, 111.0803 6.4795, 111.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-40.3632, 112.0803 6.4795, 112.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-40.3632, 113.0803 6.4795, 113.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-      </g>
       </svg>
-            <svg
+      <svg
         ref={svgRefFront2}
         width="21cm"
         height="29cm"
@@ -1526,74 +1280,7 @@ return (
         transform="scale(1, -1)"
         
       >
-        {generateFrontSecondsplitview()}
-
-      <g fill="none" stroke="Black">
-      {/* vertcal lines */}
-            <polyline shapeRendering="crispEdges" points="19.3632, 86.0803 19.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="18.3632, 86.0803 18.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="17.3632, 86.0803 17.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="16.3632, 86.0803 16.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="15.3632, 86.0803 15.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-
-            <polyline shapeRendering="crispEdges" points="14.3632, 86.0803 14.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="13.3632, 86.0803 13.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="12.3632, 86.0803 12.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-
-            <polyline shapeRendering="crispEdges" points="11.3632, 86.0803 11.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="10.3632, 86.0803 10.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="9.3632, 86.0803 9.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-                        <polyline shapeRendering="crispEdges" points="8.3632, 86.0803 8.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="7.3632, 86.0803 7.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="6.3632, 86.0803 6.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-
-
-            <polyline shapeRendering="crispEdges" points="5.3632, 86.0803 5.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="4.3632, 86.0803 4.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="3.3632, 86.0803 3.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="2.3632, 86.0803 2.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="1.3632, 86.0803 1.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="0.3632, 86.0803 0.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-0.3632, 86.0803 -0.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-
-            <polyline shapeRendering="crispEdges" points="-1.3632, 86.0803 -1.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-2.3632, 86.0803 -2.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-3.3632, 86.0803 -3.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-4.3632, 86.0803 -4.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-5.3632, 86.0803 -5.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-6.3632, 86.0803 -6.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-7.3632, 86.0803 -7.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-8.3632, 86.0803 -8.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-9.3632, 86.0803 -9.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-10.3632, 86.0803 -10.3632, 119.0011 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-
-            {/* horizontal lines */}
-            <polyline shapeRendering="crispEdges" points="-10.3632, 89.0803 19.4795, 89.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-10.3632, 90.0803 19.4795, 90.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-10.3632, 91.0803 19.4795, 91.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-10.3632, 92.0803 19.4795, 92.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-10.3632, 93.0803 19.4795, 93.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-10.3632, 94.0803 19.4795, 94.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-10.3632, 95.0803 19.4795, 95.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-10.3632, 96.0803 19.4795, 96.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-10.3632, 97.0803 19.4795, 97.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-10.3632, 98.0803 19.4795, 98.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-10.3632, 99.0803 19.4795, 99.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-10.3632, 100.0803 19.4795, 100.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-10.3632, 101.0803 19.4795, 101.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-10.3632, 102.0803 19.4795, 102.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-10.3632, 103.0803 19.4795, 103.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-10.3632, 104.0803 19.4795, 104.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-10.3632, 105.0803 19.4795, 105.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-10.3632, 106.0803 19.4795, 106.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-10.3632, 107.0803 19.4795, 107.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-10.3632, 108.0803 19.4795, 108.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-10.3632, 109.0803 19.4795, 109.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-10.3632, 110.0803 19.4795, 110.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-10.3632, 111.0803 19.4795, 111.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-10.3632, 112.0803 19.4795, 112.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-            <polyline shapeRendering="crispEdges" points="-10.3632, 113.0803 19.4795, 113.0803 " strokeOpacity="0.3000" strokeWidth="0.1000"></polyline>
-      </g>
+      {generateBack1view()}
       </svg>
     </div>
   

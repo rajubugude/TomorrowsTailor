@@ -542,3 +542,94 @@
 //     }
 //   });
 // };
+
+
+  // const generateFrontFirstsplitview = () => {
+  //   const lines = [];
+  //   for (let i = 0; i < pairsSplit1.length; i++) {
+  //     const [u, v] = pairsSplit1[i];
+  //     const point1 = frontviewpoints[u];
+  //     const point2 = frontviewpoints[v];
+
+  //     if (u===6 && v===9) {
+  //       const { x: x1, y: y1 } = point1;
+  //       const { x: x2, y: y2 } = point2;
+  //       const d = `M${x1} ${y1+110} A9 6, 0, 0 0, ${x2} ${y2+110}`;
+  //       lines.push(
+  //         <path d={d} stroke="Black" strokeWidth="0.203" fill="none"/> 
+  //       );
+  //     }else if(u===9 && v===15){
+  //       const { x: x1, y: y1 } = point1;
+  //       const { x: x2, y: y2 } = point2;
+  //       const d = `M${x1} ${y1+110} A60 55, 0, 0 0, ${x2} ${y2+110}`;
+  //       lines.push(
+  //         <path d={d} stroke="Black" strokeWidth="0.203" fill="none"/> 
+  //       );
+  //     }else if(u===6 && v===6){
+  //       const { x: x1, y: y1 } = point1;
+
+  //       const pointStyle = {
+  //         fill: 'yellow', 
+  //       };
+  //       lines.push(
+  //             <circle cx={x1} cy={y1+110} r={0.3} style={pointStyle}/>
+  //       )
+  //     }else if(u===38 && v===38){
+  //       const { x: x1, y: y1 } = point1;
+
+  //       const pointStyle = {
+  //         fill: 'yellow', 
+  //       };
+  //       lines.push(
+  //             <circle cx={x1} cy={y1+110} r={0.3} style={pointStyle}/>
+  //       )
+  //     }
+  //     else if(u===30 && v===30){
+  //       const { x: x1, y: y1 } = point1;
+
+  //       const pointStyle = {
+  //         fill: 'darkred', 
+  //       };
+  //       lines.push(
+  //             <circle cx={x1} cy={y1+110} r={0.3} style={pointStyle}/>
+  //       )
+  //     }
+  //     else if(u===32 && v===32){
+  //       const { x: x1, y: y1 } = point1;
+
+  //       const pointStyle = {
+  //         fill: 'darkred', 
+  //       };
+  //       lines.push(
+  //             <circle cx={x1} cy={y1+110} r={0.3} style={pointStyle}/>
+  //       )
+  //     }
+  //     else if(u===33 && v===33){
+  //       const { x: x1, y: y1 } = point1;
+
+  //       const pointStyle = {
+  //         fill: 'darkred', 
+  //       };
+  //       lines.push(
+  //             <circle cx={x1} cy={y1+110} r={0.3} style={pointStyle}/>
+  //       )
+  //     }
+  //     else{
+
+  //       const { x: x1, y: y1 } = point1;
+  //       const { x: x2, y: y2 } = point2;
+  //       lines.push(
+  //           <line
+  //           x1={x1}
+  //           y1={y1+110}
+  //           x2={x2}
+  //           y2={y2+110}
+  //           stroke="black"
+  //           strokeWidth="0.203"
+  //         />
+  //         );
+  //     }
+
+  //   }
+  //   return lines;
+  // };
