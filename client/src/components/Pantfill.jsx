@@ -13,6 +13,7 @@ import {
   setcalculatedPointsPixels
 } from "../context/TrouserSlice";
 import Checkoutpage from "./Checkoutpage";
+import Navbar from "./Navbar";
 const Pantfill = () => {
   const [showcheckout, setShowcheckout] = useState(false);
   const dispatch = useDispatch();
@@ -68,8 +69,9 @@ const Pantfill = () => {
   };
   return (
     <>
+    <Navbar/>
       <form>
-        <div className="space-y-12 bg-white p-10 m-5">
+        <div className="space-y-12 bg-white p-10 m-20">
           <div className="border-b border-gray-900/10 pb-12">
             <h2 className="text-base font-semibold leading-7 text-gray-900">
               Provide Your Tailored Measurements

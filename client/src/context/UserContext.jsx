@@ -6,9 +6,11 @@ import {setUserInfo} from "./user/userSlice";
 import { useDispatch } from "react-redux";
 
 export const UserContext = createContext({});
+
 export function UserContextProvider({ children }) {
-  const [user, setUser] = useState(undefined);
+  const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true); // Track loading state
+  ///const [token, setToken] = useState(localStorage.getItem('token') || null);
   const [info, setInfo] = useState({});
   const dispatch = useDispatch();
   
@@ -22,12 +24,11 @@ export function UserContextProvider({ children }) {
       setUser(res.data._id);
       setInfo(res.data); // Set user info here
       dispatch(setUserInfo(res.data));
+      setIsLoading(false)
       
     } catch (err) {
       console.log(err);
-    } finally {
-      setIsLoading(false); // Update loading state regardless of success or failure
-    }
+    } 
   }, [dispatch]);
 
   useEffect(() => {

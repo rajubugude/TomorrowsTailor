@@ -173,16 +173,20 @@ const downloadPDF = async () => {
     });
 
     doc.addPage();
-    doc.text("Print Actual Size (100% Scale);", margin, margin)
+    doc.text("Print Actual Size (100% Scale);", margin-1, margin-1)
+    doc.text("Front-view of Trouser", margin-1, margin-2)
+
     const svg = svgRefFront.current;
     const imageDataUrl = await getSvgImage(svg);
     setImageDataUrlJPEG(imageDataUrl);
     doc.addImage(imageDataUrlJPEG, 'JPEG', margin+3, margin, pdfWidth - 1 * margin, pdfHeight-1 * margin-1, null, 'FAST');
     doc.addPage();
+    doc.text("Print Actual Size (100% Scale);", margin-1, margin-1)
+    doc.text("Back-view of Trouser", margin-1, margin-2)
     const svg2 = svgRefFront2.current;
     const imageDataUrl2 = await getSvgImage(svg2);
     setImageDataUrlJPEG2(imageDataUrl2);
-    doc.addImage(imageDataUrlJPEG2, 'JPEG', margin-8, margin, pdfWidth - 1 * margin, pdfHeight-1 * margin-1, null, 'FAST');
+    doc.addImage(imageDataUrlJPEG2, 'JPEG', margin+2, margin, pdfWidth - 1 * margin, pdfHeight-1 * margin-1, null, 'FAST');
     doc.save("tailor_info.pdf");
     uploadPDFToBackend(doc.output('blob'));
 
@@ -688,7 +692,126 @@ const getSvgImage = (svg) => {
     }
     return lines;
   };
+  const generateBack2view = () => {
+    const lines = [];
+    for (let i = 0; i < backpairs.length; i++) {
+      const [u, v] = backpairs[i];
+      const point1 = backviewpoints[u];
+      const point2 = backviewpoints[v];
+      if (u===19 && v===24) {
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        const d = `M${x1} ${y1+110} A9 16, 0, 0 0, ${x2} ${y2+110}`;
+        lines.push(
+          <path d={d} stroke="Black" strokeWidth="0.505" fill="none"/> 
+        );
+      }else if(u===24 && v===29){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        const d = `M${x1} ${y1+110} A50 125, 0, 0 0, ${x2} ${y2+110}`;
+        lines.push(
+          <path d={d} stroke="Black" strokeWidth="0.505" fill="none" /> 
+        );
+      }else if(u===22 && v===25){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        const d = `M${x1} ${y1+110} A65 80 , 0, 0 0, ${x2} ${y2+110}`;
+        lines.push(
+          <path d={d} stroke="Black" strokeWidth="0.505" fill="none" /> 
+        );
+      }else if(u===25 && v===27){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        const d = `M${x1} ${y1+110} A55 145 , 0, 0 1, ${x2} ${y2+110}`;
+        lines.push(
+          <path d={d} stroke="Black" strokeWidth="0.505" fill="none" /> 
+        );
+      }else if(u===26 && v===28){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        const d = `M${x1} ${y1+110} A10 1 , 0, 0 0, ${x2} ${y2+110}`;
+        lines.push(
+          <path d={d} stroke="Black" strokeWidth="0.505" fill="none" /> 
+        );
+      }else if(u===31 && v===31){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        console.log(x2, y2);
+        // const size = 1.5;
 
+        const pointStyle = {
+          fill: 'blue', 
+        };
+        lines.push(
+              <circle cx={x1} cy={y1+110} r={0.6} style={pointStyle}/>
+        )
+      }else if(u===34 && v===34){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        console.log(x2, y2);
+        // const size = 1.5;
+
+        const pointStyle = {
+          fill: 'blue', 
+        };
+        lines.push(
+              <circle cx={x1} cy={y1+110} r={0.6} style={pointStyle}/>
+        )
+      }else if(u===35 && v===35){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        console.log(x2, y2);
+        // const size = 1.5;
+
+        const pointStyle = {
+          fill: 'blue', 
+        };
+        lines.push(
+              <circle cx={x1} cy={y1+110} r={0.6} style={pointStyle}/>
+        )
+      }else if(u===36 && v===36){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        console.log(x2, y2);
+        // const size = 1.5;
+
+        const pointStyle = {
+          fill: 'blue', 
+        };
+        lines.push(
+              <circle cx={x1} cy={y1+110} r={0.6} style={pointStyle}/>
+        )
+      }else if(u===37 && v===37){
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        console.log(x2, y2);
+        // const size = 1.5;
+
+        const pointStyle = {
+          fill: 'blue', 
+        };
+        lines.push(
+          <circle cx={x1} cy={y1+110} r={0.6} style={pointStyle}/>
+        )
+      }
+      else{
+        const { x: x1, y: y1 } = point1;
+        const { x: x2, y: y2 } = point2;
+        lines.push(
+            <line
+            x1={x1}
+            y1={y1+110}
+            x2={x2}
+            y2={y2+110}
+            stroke="black"
+            strokeWidth="0.503"
+            fill="none"
+          />
+          );
+      }
+    }
+    return lines;
+  };
   const generateGridview = () => {
     const lines = [];
     for (let i = 0; i < gridpairs.length; i++) {
@@ -1280,7 +1403,7 @@ return (
         transform="scale(1, -1)"
         
       >
-      {generateBack1view()}
+      {generateBack2view()}
       </svg>
     </div>
   

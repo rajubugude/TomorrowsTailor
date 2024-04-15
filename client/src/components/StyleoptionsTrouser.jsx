@@ -3,6 +3,7 @@ import { StarIcon } from "@heroicons/react/20/solid";
 import { RadioGroup } from "@headlessui/react";
 import img1 from "../assets/1.png";
 import { useNavigate } from "react-router-dom";
+import Navbar from "./Navbar";
 const product = {
   name: "Basic Trouser",
   price: "$32",
@@ -50,7 +51,9 @@ export default function StyleOptions() {
   const navigate = useNavigate();
 
   return (
-    <div className="bg-white">
+    <>
+    <Navbar/>
+    <div className="bg-white mt-20">
       <div className="pt-6">
         <nav aria-label="Breadcrumb">
           <ol
@@ -314,5 +317,6 @@ export default function StyleOptions() {
         </div>
       </div>
     </div>
+    </>
   );
 }

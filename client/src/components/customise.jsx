@@ -1,6 +1,7 @@
 import "../styles/style.css";
 import pant from "../assets/1.png";
 import { Link } from "react-router-dom";
+import Navbar from "./Navbar";
 
 const Customise = () => {
   const products = [
@@ -38,7 +39,8 @@ const Customise = () => {
   ];
   return (
     <>
-      <div>
+    <Navbar/>
+      <div className="mt-20">
         <p>
           &quot;Discover endless possibilities for personalization with
           Tomorrow&apos;s Tailor. From selecting fabrics and styles to providing
