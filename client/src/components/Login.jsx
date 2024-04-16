@@ -4,12 +4,15 @@ import axios from "axios";
 import { URL } from "../url";
 import "../styles/style.css";
 import NavbarLogin from "./NavbarforLogin";
-import { useSelector } from "react-redux";
+import { useDispatch,useSelector } from "react-redux";
+import { setUserInfo } from "../context/user/userSlice";
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const data = useSelector((state) => state.user.userInfo);
   const handleLogin = async () => {
     try {
@@ -19,9 +22,12 @@ const Login = () => {
         { withCredentials: true }
       );
       console.log(res.data);
+      dispatch(setUserInfo(res.data));
       sessionStorage.setItem("userData", JSON.stringify(res));
+      localStorage.setItem("user",JSON.stringify(res));
+      // window.location.reload();
       console.log(data.role)
-      if (data?.role==="admin"){
+      if (res.data.role==="admin"){
         navigate("/admin-home");
       }else {
         navigate("/home")

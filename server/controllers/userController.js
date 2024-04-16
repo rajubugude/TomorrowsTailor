@@ -90,6 +90,11 @@ const logoutController = asyncHandler(async (req, res) => {
   }
 });
 
+
+
+
+
+
 const fetchController = asyncHandler(async (req, res) => {
   const token = req.cookies.token;
   jwt.verify(token, process.env.JWT_SECRET, {}, async (err, data) => {
